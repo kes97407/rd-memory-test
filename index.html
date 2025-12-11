@@ -479,7 +479,142 @@
         backText:
           "지수분포, 직렬 시스템\nλ_sys = Σ λᵢ\nR_sys(t) = exp(-λ_sys t)",
       },
-
+// =========================
+// 추가 카드 (약한 부분 19개)
+// =========================
+  {
+    id: "WEAK_01",
+    topic: "계량형 샘플크기 공식",
+    frontText: "모평균 추정을 위한 샘플크기 공식",
+    backText:
+      "n = (Z_{α/2} · σ / E)^2\n\nσ: 표준편차(추정값)\nE: 허용오차 (±E)\n\n예시) σ=5, E=1, 신뢰수준 95% (Z=1.96)\n→ n = (1.96×5/1)^2 ≈ 96"
+  },
+  {
+    id: "WEAK_02",
+    topic: "공정능력·관리도 공식",
+    frontText: "공정능력지수 (Cp, Cpk, Pp, Ppk)",
+    backText:
+      "Cp = (USL - LSL) / (6σ)\nCpk = min[(USL - μ)/(3σ), (μ - LSL)/(3σ)]\n\nPp, Ppk는 장기 데이터 기준.\n\n관리도 경계: UCL = μ + 3σ/√n, LCL = μ - 3σ/√n"
+  },
+  {
+    id: "WEAK_03",
+    topic: "점추정 및 구간추정",
+    frontText: "모평균에 대한 신뢰구간 (σ 모름, t분포 사용)",
+    backText:
+      "μ ∈ [x̄ ± t_{α/2, n-1}·(s/√n)]\n\n모비율에 대한 구간: p̂ ± Z_{α/2}·√[p̂(1-p̂)/n]"
+  },
+  {
+    id: "WEAK_04",
+    topic: "1종·2종 절단시험",
+    frontText: "지수 수명시험 절단 공식",
+    backText:
+      "1종 절단(Type I): 일정시간 t₀까지 시험, 고장 r개\nλ̂ = r / (Σ t_i + (n - r)t₀)\n\n2종 절단(Type II): r번째 고장까지 시험, λ̂ = r / Σ t_i"
+  },
+  {
+    id: "WEAK_05",
+    topic: "변동·비율 신뢰구간",
+    frontText: "분산·비율 신뢰구간",
+    backText:
+      "모분산: (n−1)s² / χ²_{α/2,n−1} ≤ σ² ≤ (n−1)s² / χ²_{1−α/2,n−1}\n\n모비율: p̂ ± Z_{α/2}·√[p̂(1−p̂)/n]"
+  },
+  {
+    id: "WEAK_06",
+    topic: "Duane·AMSAA 모델",
+    frontText: "Duane/AMSAA 신뢰도성장모델",
+    backText:
+      "Duane: λ(t) = K t^{α−1}, MTBF(t)=K' t^{α}\nln(MTBF)=lnK'+α ln t\n\nAMSAA: N(t)=λ₀ t^{β}, λ(t)=βλ₀t^{β−1}"
+  },
+  {
+    id: "WEAK_07",
+    topic: "Median Rank / ERTO",
+    frontText: "중위순위(Median Rank) 공식",
+    backText:
+      "MR(i) = (i − 0.3)/(n + 0.4)\n\nERTO(Extended Rank Time Order): 절단데이터 보정 시 MR의 확장형"
+  },
+  {
+    id: "WEAK_08",
+    topic: "PRST 수식",
+    frontText: "PRST(Probability Ratio Sequential Test)",
+    backText:
+      "L = Π [ f(x_i|H₁) / f(x_i|H₀) ]\n\n로그 누적비로 판단:\nlnL ≥ A → H₁ 채택\nlnL ≤ B → H₀ 채택"
+  },
+  {
+    id: "WEAK_09",
+    topic: "고장 절단 포인트",
+    frontText: "절단 데이터 고장점 보정식",
+    backText:
+      "Type I 절단: 미고장 샘플은 시험종료시점 t₀으로 간주\n\n고장율 추정 λ̂ = r / (Σ 고장시간 + (n−r)t₀)"
+  },
+  {
+    id: "WEAK_10",
+    topic: "시험 중단 조건",
+    frontText: "정시·고장·교체 정시 중단시험",
+    backText:
+      "정시중단: 일정 시간 후 종료 (Type I)\n고장중단: r번째 고장 발생 시 종료 (Type II)\n교체 정시중단: 고장시 즉시 교체 후 t₀까지 지속, 총 누적시간 사용"
+  },
+  {
+    id: "WEAK_11",
+    topic: "베타분포·시료수 계산",
+    frontText: "베타분포 신뢰도 추정과 샘플크기",
+    backText:
+      "x 성공 / n 시험 → 사후분포 Beta(x+1, n−x+1)\n\n샘플크기: n = [Z_{α/2}²·p(1−p)] / E²"
+  },
+  {
+    id: "WEAK_12",
+    topic: "SW 결합주입",
+    frontText: "SW 결합주입(S/W Reliability Growth) 기본식",
+    backText:
+      "N(t)=a(1−e^{−bt})\nλ(t)=ab e^{−bt}\n\n신뢰도 성장 시험 중 발견·수정률 모델링용"
+  },
+  {
+    id: "WEAK_13",
+    topic: "병렬모델",
+    frontText: "능동/대기 병렬 시스템 신뢰도",
+    backText:
+      "능동 병렬: R=1−∏(1−R_i)\n대기 병렬(Cold standby): R=R₁+R₂(1−R₁)+…\nMTTF = (1/λ₁)+(1/λ₂)"
+  },
+  {
+    id: "WEAK_14",
+    topic: "능동·대기 리던던시",
+    frontText: "리던던시의 동등/비동등 고장률 공식",
+    backText:
+      "동등고장률(λ): 능동 R=1−(1−e^{−λt})^n\n대기(완벽스위칭): R=e^{−λ₁t}+λ₁/(λ₂−λ₁)(e^{−λ₁t}−e^{−λ₂t})"
+  },
+  {
+    id: "WEAK_15",
+    topic: "부하공유 병렬시스템",
+    frontText: "부하공유(Load-sharing) 병렬 공식",
+    backText:
+      "각 구성품 고장률이 부하분담에 따라 변화:\nλ_i(t)=λ₀·(P_i/P_total)^β\n\nβ>0이면 부하 집중시 고장률↑"
+  },
+  {
+    id: "WEAK_16",
+    topic: "공차구간·허용공차",
+    frontText: "공차구간(Tolerance Interval)",
+    backText:
+      "양측 공차구간: x̄ ± k·s\nk = k(α, P, n) from 표준표\n\n예: 95% 신뢰, 99% 포함 → k≈3.138 (n=10)"
+  },
+  {
+    id: "WEAK_17",
+    topic: "공차설계",
+    frontText: "Taguchi 공차설계 기본식",
+    backText:
+      "총변동 σ_y² = Σ (∂y/∂x_i)²·σ_i²\n\n경제적 공차설계: C_T = C_M + C_P\nC_P ∝ 1/t_i²"
+  },
+  {
+    id: "WEAK_18",
+    topic: "보전할당",
+    frontText: "보전성 할당 공식",
+    backText:
+      "목표 MDT 달성 위해 각 구성품 MTTR_i 배분\n\nΣ(MTTR_i·가중치_i) ≤ 목표 MDT"
+  },
+  {
+    id: "WEAK_19",
+    topic: "예비·교체 최적화",
+    frontText: "최적 교체·예비부품 수요 공식",
+    backText:
+      "교체주기: C_R(t)= (C_f·F(t)+C_m·R(t))/t 최소화\n예비품수요: N_s ≈ λ·T_op·(1+A_safety)"
+  },
       // ---- 여기부터는 네가 추가할 수 있는 템플릿 카드 예시 ----
       {
         id: "TEMPLATE_TEXT",
