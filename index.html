@@ -2,7 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
   <title>CRE 수식 암기장</title>
   <style>
     * {
@@ -10,8 +13,8 @@
     }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
-      background: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #020617;
       color: #e5e7eb;
       display: flex;
       min-height: 100vh;
@@ -45,25 +48,68 @@
     .viewer {
       flex: 1;
       border-radius: 16px;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 60%);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      background: radial-gradient(circle at top, #111827 0, #020617 60%);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
       justify-content: center;
       overflow: hidden;
       position: relative;
       touch-action: pan-y;
+      padding: 16px 14px 18px;
     }
-    #cardImage {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+    .topic {
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    .side-label {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      backdrop-filter: blur(6px);
+    }
+    .side {
+      flex: 1;
       display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 10px;
+    }
+    .side.active {
+      display: flex;
+    }
+    .text-content {
+      white-space: pre-line;
+      font-size: 16px;
+      line-height: 1.5;
+      padding: 4px 4px 2px;
+    }
+    .formula-text {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+    .image-content {
+      max-width: 100%;
+      max-height: 55vh;
+      object-fit: contain;
+      border-radius: 8px;
     }
     .placeholder {
       text-align: center;
       font-size: 14px;
-      padding: 0 16px;
       opacity: 0.8;
     }
     .hint {
@@ -82,7 +128,7 @@
     }
     button {
       flex: 1;
-      padding: 12px 10px;
+      padding: 11px 10px;
       border-radius: 999px;
       border: none;
       background: #1f2937;
@@ -90,12 +136,13 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        background 0.08s ease;
     }
     button:active {
       transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
       background: #111827;
     }
     .btn-main {
@@ -121,126 +168,516 @@
     </div>
 
     <div class="viewer" id="viewer">
-      <img id="cardImage" alt="수식 이미지" />
-      <div class="placeholder" id="placeholder">
-        아직 수식 이미지를 등록하지 않았습니다.<br /><br />
-        <code>imageList</code> 배열에 이미지 경로를 넣어주세요.
+      <div class="topic" id="topic"></div>
+      <div class="side-label" id="sideLabel">앞면</div>
+
+      <div class="side active" id="frontSide">
+        <div class="text-content" id="frontText"></div>
+        <img id="frontImage" class="image-content" alt="" />
       </div>
+
+      <div class="side" id="backSide">
+        <div class="text-content" id="backText"></div>
+        <img id="backImage" class="image-content" alt="" />
+      </div>
+
+      <div class="placeholder" id="placeholder">
+        아직 카드가 없습니다.<br /><br />
+        아래 코드의 <code>cards</code> 배열에 수식 카드들을
+        추가해주세요.
+      </div>
+
       <div class="hint">
-        ← 오른쪽/왼쪽으로 스와이프해서 넘기기 · 길게 눌러서 집중!
+        카드를 탭하면 앞/뒤 뒤집기 · 좌/우 스와이프로 이전/다음 이동
       </div>
     </div>
 
     <div class="controls">
       <button id="prevBtn">이전</button>
-      <button id="shuffleBtn" class="btn-main">랜덤</button>
+      <button id="flipBtn" class="btn-main">정답 보기</button>
       <button id="nextBtn">다음</button>
     </div>
 
+    <div class="controls">
+      <button id="shuffleBtn">랜덤</button>
+      <button id="resetBtn">처음부터</button>
+    </div>
+
     <div class="footer">
-      마지막으로 본 카드 위치를 자동 저장합니다.
+      마지막으로 본 위치를 자동 저장합니다. (브라우저별로 따로 저장)
     </div>
   </div>
 
   <script>
-    // 1) 여기만 본인 이미지 경로로 바꾸면 됨 👇
-    const imageList = [
-      // 예시 (지우고 본인 걸로 교체)
-      // "images/formula1.png",
-      // "images/formula2.png",
-      // "images/formula3.png"
+    // ================================
+    // 1) CRE 수식 카드 데이터
+    //    - 필요하면 자유롭게 수정/추가
+    //    - frontImage / backImage 에 이미지 경로를 넣으면 이미지도 표시
+    // ================================
+    const cards = [
+      // ---- 기본 개념 / 함수 관계 ----
+      {
+        id: "BASIC_01",
+        topic: "기본 개념",
+        frontText: "신뢰도 함수 R(t)의 정의",
+        backText:
+          "R(t) = P(T > t)\n\nT: 고장시간(random variable)\n'시간 t까지 살아 있을 확률'",
+      },
+      {
+        id: "BASIC_02",
+        topic: "기본 개념",
+        frontText: "누적고장분포 F(t)의 정의와 R(t)와의 관계",
+        backText:
+          "F(t) = P(T ≤ t)\nR(t) = 1 - F(t)\n\n'시간 t 이전(또는 t까지) 고장날 확률'",
+      },
+      {
+        id: "BASIC_03",
+        topic: "기본 개념",
+        frontText: "고장률(위험률) 함수 λ(t) 정의",
+        backText:
+          "λ(t) = f(t) / R(t)\n\nf(t): 고장시간의 PDF\nR(t): 신뢰도 함수\n\n조건부 고장률\n= 't까지 살아있다고 했을 때, t에서 순간 고장날 비율'",
+      },
+      {
+        id: "BASIC_04",
+        topic: "기본 개념",
+        frontText: "PDF, CDF, 신뢰도, 고장률의 기본 관계식",
+        backText:
+          "f(t) = dF(t)/dt\nF(t) = ∫₀ᵗ f(x) dx\nR(t) = 1 - F(t)\n\nλ(t) = f(t)/R(t)\nR(t) = exp( -∫₀ᵗ λ(u) du )",
+      },
+      {
+        id: "BASIC_05",
+        topic: "기본 개념",
+        frontText: "기대수명 MTTF / MTBF 정의",
+        backText:
+          "MTTF = E[T] = ∫₀^∞ t f(t) dt\n\n수리 가능한 경우에는 MTBF (Mean Time Between Failures)로 사용",
+      },
+
+      // ---- 지수분포 ----
+      {
+        id: "EXP_01",
+        topic: "지수분포",
+        frontText: "지수분포의 신뢰도 / CDF / PDF / 고장률",
+        backText:
+          "R(t) = exp(-λ t)\nF(t) = 1 - exp(-λ t)\nf(t) = λ exp(-λ t)\nλ(t) = λ (상수)\n\n메모리리스 분포: 과거와 무관하게 항상 같은 고장률",
+      },
+      {
+        id: "EXP_02",
+        topic: "지수분포",
+        frontText: "지수분포의 평균수명(MTTF)과 분산",
+        backText:
+          "MTTF = 1/λ\nVar(T) = 1/λ²\n\n평균수명 θ = 1/λ 로 표기하기도 함.",
+      },
+      {
+        id: "EXP_03",
+        topic: "지수분포",
+        frontText: "지수분포에서 특정 시간 t에서의 신뢰도",
+        backText:
+          "R(t) = exp(-t/θ)\n\nθ = MTTF = 1/λ\n예: t = θ 일 때 R(θ) = exp(-1) ≈ 0.368",
+      },
+
+      // ---- 와이블 분포 ----
+      {
+        id: "WEIB_01",
+        topic: "와이블 분포",
+        frontText: "와이블 분포의 PDF / CDF / 신뢰도",
+        backText:
+          "모수: 형상 β, 척도 η\n\nf(t) = (β/η) (t/η)^{β-1} exp[-(t/η)^β]\nF(t) = 1 - exp[-(t/η)^β]\nR(t) = exp[-(t/η)^β]",
+      },
+      {
+        id: "WEIB_02",
+        topic: "와이블 분포",
+        frontText: "와이블 분포의 고장률 함수",
+        backText:
+          "λ(t) = f(t) / R(t) = (β/η) (t/η)^{β-1}\n\nβ < 1 : 초기고장 (감소형)\nβ = 1 : 지수분포 (상수)\nβ > 1 : 마모고장 (증가형)",
+      },
+      {
+        id: "WEIB_03",
+        topic: "와이블 분포",
+        frontText: "와이블 분포의 평균과 분산",
+        backText:
+          "E[T] = η Γ(1 + 1/β)\nVar(T) = η² { Γ(1 + 2/β) - [Γ(1 + 1/β)]² }\n\nΓ: 감마 함수",
+      },
+      {
+        id: "WEIB_04",
+        topic: "와이블 분포",
+        frontText: "와이블 직선화(로그-로그 플롯) 기본식",
+        backText:
+          "R(t) = exp[-(t/η)^β]\n⇒ ln[-ln R(t)] = β ln t - β ln η\n\n와이블 플롯에서\nY = ln[-ln(1 - F(t))], X = ln t\n기울기 = β, 절편 = -β ln η",
+      },
+
+      // ---- 정규/로그정규 ----
+      {
+        id: "NORM_01",
+        topic: "정규분포",
+        frontText: "정규분포에서 Z 변환과 신뢰도",
+        backText:
+          "T ~ N(μ, σ²)\nZ = (T - μ)/σ\n\nR(t) = P(T > t) = 1 - Φ( (t - μ)/σ )\nF(t) = Φ( (t - μ)/σ )",
+      },
+      {
+        id: "LN_01",
+        topic: "로그정규분포",
+        frontText: "로그정규 분포 정의와 변환",
+        backText:
+          "Y = ln T ~ N(μ_Y, σ_Y²)\n\nR(t) = P(T > t)\n= P(Y > ln t)\n= 1 - Φ( (ln t - μ_Y)/σ_Y )",
+      },
+
+      // ---- 시스템 신뢰도 (Series / Parallel / k-out-of-n) ----
+      {
+        id: "SYS_01",
+        topic: "시스템 신뢰도",
+        frontText: "직렬(Series) 시스템 신뢰도",
+        backText:
+          "n개 구성요소 직렬 연결\n시스템은 모든 구성요소가 살아 있어야 동작\n\nR_series(t) = ∏ᵢ Rᵢ(t)",
+      },
+      {
+        id: "SYS_02",
+        topic: "시스템 신뢰도",
+        frontText: "병렬(Parallel) 시스템 신뢰도",
+        backText:
+          "n개 구성요소 병렬 연결\n하나라도 살아 있으면 시스템 동작\n\nR_parallel(t) = 1 - ∏ᵢ [1 - Rᵢ(t)]",
+      },
+      {
+        id: "SYS_03",
+        topic: "시스템 신뢰도",
+        frontText: "k-out-of-n 시스템 신뢰도 (동일 구성요소)",
+        backText:
+          "독립, 동일 R(t)를 갖는 n개 구성요소\n시스템: 최소 k개 이상 동작 필요\n\nR_k/n(t) = Σ_{i=k}^{n} [ C(n, i) [R(t)]^i [1 - R(t)]^{n-i} ]",
+      },
+      {
+        id: "SYS_04",
+        topic: "시스템 신뢰도",
+        frontText: "직렬 시스템의 MTBF (지수분포, 상수 고장률)",
+        backText:
+          "각 구성요소 고장률 λᵢ (지수분포, 상수)\n\nλ_system = Σ λᵢ\nMTBF_system = 1 / λ_system",
+      },
+      {
+        id: "SYS_05",
+        topic: "시스템 신뢰도",
+        frontText: "병렬 시스템의 고장률 (2개, 지수분포 동일 λ)",
+        backText:
+          "2개 동일 지수분포(λ) 병렬\nR(t) = 1 - (1 - e^{-λt})² = 2e^{-λt} - e^{-2λt}\n\nλ(t) = f(t) / R(t) 로 계산\n(시간에 따라 변하는 비상수 hazard)",
+      },
+
+      // ---- 중복/Hot standby 개념 카드 (공식 느낌 정리용) ----
+      {
+        id: "RED_01",
+        topic: "중복",
+        frontText: "완전 중복(Active parallel) 신뢰도 개념",
+        backText:
+          "n개가 모두 동시에 사용되는 병렬 구조\n\nR(t) = 1 - ∏ᵢ [1 - Rᵢ(t)]\n\n지수분포(동일 λ)에서는 시간에 따라 hazard가 감소하는 형태",
+      },
+
+      // ---- 유지보수성 / 가용도 ----
+      {
+        id: "MAINT_01",
+        topic: "유지보수성",
+        frontText: "수리시간 분포와 MTTF, MTTR, MDT",
+        backText:
+          "MTTF: 평균 고장 간 시간\nMTTR: Mean Time To Repair (단일 수리시간 평균)\nMDT: Mean Down Time\n\nMDT = MTTR + (기타 대기/물류 시간 등)",
+      },
+      {
+        id: "AVAIL_01",
+        topic: "가용도",
+        frontText: "고전적인(기본) 가용도 공식",
+        backText:
+          "A = MTBF / (MTBF + MTTR)\n\n비고장 시간 / (비고장 시간 + 수리시간)",
+      },
+      {
+        id: "AVAIL_02",
+        topic: "가용도",
+        frontText: "정상상태 가용도 (고장률 λ, 수리율 μ)",
+        backText:
+          "수리 가능한 마코프 2상태 모델\n\nA = μ / (λ + μ)\n\n여기서 λ = 고장률, μ = 수리율",
+      },
+      {
+        id: "AVAIL_03",
+        topic: "가용도",
+        frontText: "운용 가용도, 내재 가용도 개념 정리",
+        backText:
+          "내재 가용도 A_i = MTBF / (MTBF + MTTR)\n(계획정지, 물류/대기시간 제외)\n\n운용 가용도 A_o = 가동시간 / (전체 달력시간)\n(모든 계획·비계획 정지 포함)",
+      },
+
+      // ---- 신뢰도 시험(계수형) : binomial ----
+      {
+        id: "TEST_01",
+        topic: "계수형 신뢰도 시험",
+        frontText: "계수형(성공/실패) 시험에서 신뢰도 추정",
+        backText:
+          "n회 시험, x회 성공\n\n신뢰도 추정치 R̂ = x / n\n불신뢰도(고장확률) q̂ = 1 - R̂",
+      },
+      {
+        id: "TEST_02",
+        topic: "계수형 신뢰도 시험",
+        frontText: "계수형 신뢰도 시험에서 단측 하한 신뢰구간 (x= n 성공 시)",
+        backText:
+          "모든 시험이 성공(x = n)일 때\n\nR_L = (1 - α)^{1/n}\n\nα: 유의수준 (예: 0.1 → 90% 신뢰수준)\nR ≥ R_L (단측 하한)",
+      },
+
+      // ---- 수명시험(지수, r failures) ----
+      {
+        id: "TEST_EXP_01",
+        topic: "지수 수명시험",
+        frontText: "지수분포 수명시험에서 λ 추정 (r 고장 관측)",
+        backText:
+          "총 시험시간 T = Σ tᵢ (또는 T = n * t_c 등)\n\nr개의 고장이 관측되었을 때\nλ̂ = r / T\nMTTF̂ = 1 / λ̂ = T / r",
+      },
+      {
+        id: "TEST_EXP_02",
+        topic: "지수 수명시험",
+        frontText:
+          "지수분포 수명시험에서 λ의 신뢰구간 (χ² 이용, r 고장)",
+        backText:
+          "하한: λ_L = (χ²_{2r, 1-α/2}) / (2T)\n상한: λ_U = (χ²_{2r, α/2}) / (2T)\n\n여기서 χ²_{ν, p} : 자유도 ν, 상위 p백분위수",
+      },
+
+      // ---- 가속수명시험(ALT) 기본 ----
+      {
+        id: "ALT_01",
+        topic: "가속수명시험",
+        frontText: "Arrhenius 가속 모델 (온도 스트레스)",
+        backText:
+          "MTTF = A exp( E_a / (kT) )\n\nE_a: 활성화 에너지\nk: 볼츠만 상수\nT: 절대온도(K)\n\n또는 ln(MTTF) = ln A + E_a/(kT)",
+      },
+      {
+        id: "ALT_02",
+        topic: "가속수명시험",
+        frontText: "Inverse Power 법칙 (전압, 하중 등)",
+        backText:
+          "스트레스 S에서의 MTTF\nMTTF(S) = K S^{-n}\n\n로그 형태: ln(MTTF) = ln K - n ln S",
+      },
+
+      // ---- 베이지안 / 업데이트 간단 ----
+      {
+        id: "BAYES_01",
+        topic: "베이지안 추정",
+        frontText: "지수분포 고장률 λ의 감마 사전분포 + 데이터 관측",
+        backText:
+          "사전분포: λ ~ Gamma(α₀, β₀)\n시험결과: 총 시간 T, r 고장\n\n사후분포: λ | 데이터 ~ Gamma(α₀ + r, β₀ + T)",
+      },
+
+      // ---- Duane 신뢰도 성장모델 개념 ----
+      {
+        id: "GROWTH_01",
+        topic: "신뢰도 성장",
+        frontText: "Duane 모델 (누적 MTTF vs 누적 시간)",
+        backText:
+          "MTBF(t) = K t^{α}\n또는 누적 고장률 형태로 표현\n\n로그 선형식\nln(MTBF) = ln K + α ln t",
+      },
+
+      // ---- 기타 자주 쓰는 관계식 ----
+      {
+        id: "MISC_01",
+        topic: "기타",
+        frontText: "불신뢰도 Q(t), 고장건수 기대값",
+        backText:
+          "Q(t) = 1 - R(t) = F(t)\n\nN개의 동일한 항목에서\n기대 고장개수 E[고장 수] = N Q(t)",
+      },
+      {
+        id: "MISC_02",
+        topic: "기타",
+        frontText: "시스템 고장률 vs 구성요소 고장률 (지수, 직렬)",
+        backText:
+          "지수분포, 직렬 시스템\nλ_sys = Σ λᵢ\nR_sys(t) = exp(-λ_sys t)",
+      },
+
+      // ---- 여기부터는 네가 추가할 수 있는 템플릿 카드 예시 ----
+      {
+        id: "TEMPLATE_TEXT",
+        topic: "템플릿",
+        frontText: "여기에 암기하고 싶은 질문/힌트 텍스트",
+        backText: "여기에 공식/답 텍스트",
+      },
+      {
+        id: "TEMPLATE_IMAGE",
+        topic: "템플릿",
+        frontText: "이미지로 된 수식/그래프 (앞면에 그림)",
+        frontImage: "images/example_formula.png", // 직접 경로 수정
+        backText: "이 이미지에 대한 핵심 요약/공식 설명",
+      },
     ];
 
-    const STORAGE_KEY = "cre_formula_flashcard_index";
+    // ================================
+    // 2) 앱 로직
+    // ================================
+    const STORAGE_KEY_INDEX = "cre_formula_flashcard_index";
 
-    const imgEl = document.getElementById("cardImage");
-    const placeholderEl = document.getElementById("placeholder");
-    const counterEl = document.getElementById("counter");
     const viewerEl = document.getElementById("viewer");
+    const counterEl = document.getElementById("counter");
+    const topicEl = document.getElementById("topic");
+    const sideLabelEl = document.getElementById("sideLabel");
+    const frontSideEl = document.getElementById("frontSide");
+    const backSideEl = document.getElementById("backSide");
+    const frontTextEl = document.getElementById("frontText");
+    const backTextEl = document.getElementById("backText");
+    const frontImageEl = document.getElementById("frontImage");
+    const backImageEl = document.getElementById("backImage");
+    const placeholderEl = document.getElementById("placeholder");
+
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
+    const flipBtn = document.getElementById("flipBtn");
     const shuffleBtn = document.getElementById("shuffleBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
     let currentIndex = 0;
+    let showBack = false;
     let touchStartX = null;
     let touchEndX = null;
 
     function preloadImages() {
-      imageList.forEach(src => {
-        const img = new Image();
-        img.src = src;
+      cards.forEach((c) => {
+        if (c.frontImage) {
+          const img1 = new Image();
+          img1.src = c.frontImage;
+        }
+        if (c.backImage) {
+          const img2 = new Image();
+          img2.src = c.backImage;
+        }
       });
     }
 
     function loadSavedIndex() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY_INDEX);
         if (saved !== null) {
           const idx = parseInt(saved, 10);
-          if (!isNaN(idx) && idx >= 0 && idx < imageList.length) {
+          if (!isNaN(idx) && idx >= 0 && idx < cards.length) {
             currentIndex = idx;
           }
         }
       } catch (e) {
-        // localStorage 사용 불가한 경우 무시
+        // localStorage 못 쓸 때는 무시
       }
     }
 
     function saveIndex() {
       try {
-        localStorage.setItem(STORAGE_KEY, String(currentIndex));
+        localStorage.setItem(STORAGE_KEY_INDEX, String(currentIndex));
       } catch (e) {
         // 무시
       }
     }
 
-    function updateView() {
-      const total = imageList.length;
+    function updateCounter() {
+      const total = cards.length;
       if (total === 0) {
-        imgEl.style.display = "none";
-        placeholderEl.style.display = "block";
         counterEl.textContent = "0 / 0";
+      } else {
+        counterEl.textContent = currentIndex + 1 + " / " + total;
+      }
+    }
+
+    function applySide() {
+      if (showBack) {
+        frontSideEl.classList.remove("active");
+        backSideEl.classList.add("active");
+        sideLabelEl.textContent = "뒷면";
+        flipBtn.textContent = "앞면 보기";
+      } else {
+        backSideEl.classList.remove("active");
+        frontSideEl.classList.add("active");
+        sideLabelEl.textContent = "앞면";
+        flipBtn.textContent = "정답 보기";
+      }
+    }
+
+    function updateCardView() {
+      const total = cards.length;
+      if (total === 0) {
+        viewerEl.classList.remove("has-card");
+        placeholderEl.style.display = "block";
+        topicEl.textContent = "";
+        frontTextEl.textContent = "";
+        backTextEl.textContent = "";
+        frontImageEl.style.display = "none";
+        backImageEl.style.display = "none";
+        updateCounter();
         return;
       }
 
-      imgEl.src = imageList[currentIndex];
-      imgEl.style.display = "block";
+      viewerEl.classList.add("has-card");
       placeholderEl.style.display = "none";
-      counterEl.textContent = (currentIndex + 1) + " / " + total;
 
+      const card = cards[currentIndex];
+
+      topicEl.textContent = card.topic || "";
+
+      frontTextEl.textContent = card.frontText || "";
+      backTextEl.textContent = card.backText || "";
+
+      if (card.frontImage) {
+        frontImageEl.src = card.frontImage;
+        frontImageEl.style.display = "block";
+      } else {
+        frontImageEl.style.display = "none";
+      }
+
+      if (card.backImage) {
+        backImageEl.src = card.backImage;
+        backImageEl.style.display = "block";
+      } else {
+        backImageEl.style.display = "none";
+      }
+
+      updateCounter();
+      applySide();
       saveIndex();
     }
 
     function showNext() {
-      if (imageList.length === 0) return;
-      currentIndex = (currentIndex + 1) % imageList.length;
-      updateView();
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex + 1) % cards.length;
+      showBack = false;
+      updateCardView();
     }
 
     function showPrev() {
-      if (imageList.length === 0) return;
-      currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
-      updateView();
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      showBack = false;
+      updateCardView();
     }
 
     function showRandom() {
-      if (imageList.length === 0) return;
-      if (imageList.length === 1) {
-        updateView();
+      if (cards.length <= 1) {
+        showBack = false;
+        updateCardView();
         return;
       }
       let newIndex = currentIndex;
       while (newIndex === currentIndex) {
-        newIndex = Math.floor(Math.random() * imageList.length);
+        newIndex = Math.floor(Math.random() * cards.length);
       }
       currentIndex = newIndex;
-      updateView();
+      showBack = false;
+      updateCardView();
     }
 
-    // 버튼 이벤트
+    function resetToFirst() {
+      if (cards.length === 0) return;
+      currentIndex = 0;
+      showBack = false;
+      updateCardView();
+    }
+
+    // 이벤트 바인딩
     prevBtn.addEventListener("click", showPrev);
     nextBtn.addEventListener("click", showNext);
     shuffleBtn.addEventListener("click", showRandom);
+    resetBtn.addEventListener("click", resetToFirst);
+    flipBtn.addEventListener("click", () => {
+      if (cards.length === 0) return;
+      showBack = !showBack;
+      applySide();
+    });
+
+    viewerEl.addEventListener("click", (e) => {
+      if (e.target === prevBtn || e.target === nextBtn) return;
+      if (cards.length === 0) return;
+      showBack = !showBack;
+      applySide();
+    });
 
     // 스와이프 제스처
     viewerEl.addEventListener("touchstart", (e) => {
@@ -259,31 +696,35 @@
     viewerEl.addEventListener("touchend", () => {
       if (touchStartX === null || touchEndX === null) return;
       const dx = touchEndX - touchStartX;
-      const threshold = 40; // 스와이프 인식 기준
+      const threshold = 40;
       if (dx > threshold) {
-        // 오른쪽으로 스와이프 → 이전 카드
         showPrev();
       } else if (dx < -threshold) {
-        // 왼쪽으로 스와이프 → 다음 카드
         showNext();
       }
       touchStartX = null;
       touchEndX = null;
     });
 
-    // 키보드 (PC에서 테스트할 때)
+    // 키보드 (PC 테스트용)
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") showNext();
       if (e.key === "ArrowLeft") showPrev();
-      if (e.key === " ") showRandom();
+      if (e.key === " ") {
+        e.preventDefault();
+        if (cards.length > 0) {
+          showBack = !showBack;
+          applySide();
+        }
+      }
     });
 
     // 초기화
-    if (imageList.length > 0) {
+    if (cards.length > 0) {
       preloadImages();
       loadSavedIndex();
     }
-    updateView();
+    updateCardView();
   </script>
 </body>
 </html>
