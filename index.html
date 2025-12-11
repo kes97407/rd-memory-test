@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>CRE 수식 암기장</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    .app {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 900px;
+      padding: 16px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 2px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .counter {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    .viewer {
+      flex: 1;
+      border-radius: 16px;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 60%);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      touch-action: pan-y;
+    }
+    #cardImage {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+    .placeholder {
+      text-align: center;
+      font-size: 14px;
+      padding: 0 16px;
+      opacity: 0.8;
+    }
+    .hint {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.6;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    button {
+      flex: 1;
+      padding: 12px 10px;
+      border-radius: 999px;
+      border: none;
+      background: #1f2937;
+      color: #e5e7eb;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+    }
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+      background: #111827;
+    }
+    .btn-main {
+      flex: 1.4;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    }
+    .btn-main:active {
+      background: linear-gradient(135deg, #4338ca, #0891b2);
+    }
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.5;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="title">CRE 수식 암기장</div>
+      <div class="counter" id="counter">0 / 0</div>
+    </div>
+
+    <div class="viewer" id="viewer">
+      <img id="cardImage" alt="수식 이미지" />
+      <div class="placeholder" id="placeholder">
+        아직 수식 이미지를 등록하지 않았습니다.<br /><br />
+        <code>imageList</code> 배열에 이미지 경로를 넣어주세요.
+      </div>
+      <div class="hint">
+        ← 오른쪽/왼쪽으로 스와이프해서 넘기기 · 길게 눌러서 집중!
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prevBtn">이전</button>
+      <button id="shuffleBtn" class="btn-main">랜덤</button>
+      <button id="nextBtn">다음</button>
+    </div>
+
+    <div class="footer">
+      마지막으로 본 카드 위치를 자동 저장합니다.
+    </div>
+  </div>
+
+  <script>
+    // 1) 여기만 본인 이미지 경로로 바꾸면 됨 👇
+    const imageList = [
+      // 예시 (지우고 본인 걸로 교체)
+      // "images/formula1.png",
+      // "images/formula2.png",
+      // "images/formula3.png"
+    ];
+
+    const STORAGE_KEY = "cre_formula_flashcard_index";
+
+    const imgEl = document.getElementById("cardImage");
+    const placeholderEl = document.getElementById("placeholder");
+    const counterEl = document.getElementById("counter");
+    const viewerEl = document.getElementById("viewer");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+
+    let currentIndex = 0;
+    let touchStartX = null;
+    let touchEndX = null;
+
+    function preloadImages() {
+      imageList.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+
+    function loadSavedIndex() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) {
+          const idx = parseInt(saved, 10);
+          if (!isNaN(idx) && idx >= 0 && idx < imageList.length) {
+            currentIndex = idx;
+          }
+        }
+      } catch (e) {
+        // localStorage 사용 불가한 경우 무시
+      }
+    }
+
+    function saveIndex() {
+      try {
+        localStorage.setItem(STORAGE_KEY, String(currentIndex));
+      } catch (e) {
+        // 무시
+      }
+    }
+
+    function updateView() {
+      const total = imageList.length;
+      if (total === 0) {
+        imgEl.style.display = "none";
+        placeholderEl.style.display = "block";
+        counterEl.textContent = "0 / 0";
+        return;
+      }
+
+      imgEl.src = imageList[currentIndex];
+      imgEl.style.display = "block";
+      placeholderEl.style.display = "none";
+      counterEl.textContent = (currentIndex + 1) + " / " + total;
+
+      saveIndex();
+    }
+
+    function showNext() {
+      if (imageList.length === 0) return;
+      currentIndex = (currentIndex + 1) % imageList.length;
+      updateView();
+    }
+
+    function showPrev() {
+      if (imageList.length === 0) return;
+      currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+      updateView();
+    }
+
+    function showRandom() {
+      if (imageList.length === 0) return;
+      if (imageList.length === 1) {
+        updateView();
+        return;
+      }
+      let newIndex = currentIndex;
+      while (newIndex === currentIndex) {
+        newIndex = Math.floor(Math.random() * imageList.length);
+      }
+      currentIndex = newIndex;
+      updateView();
+    }
+
+    // 버튼 이벤트
+    prevBtn.addEventListener("click", showPrev);
+    nextBtn.addEventListener("click", showNext);
+    shuffleBtn.addEventListener("click", showRandom);
+
+    // 스와이프 제스처
+    viewerEl.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchEndX = null;
+      }
+    });
+
+    viewerEl.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1) {
+        touchEndX = e.touches[0].clientX;
+      }
+    });
+
+    viewerEl.addEventListener("touchend", () => {
+      if (touchStartX === null || touchEndX === null) return;
+      const dx = touchEndX - touchStartX;
+      const threshold = 40; // 스와이프 인식 기준
+      if (dx > threshold) {
+        // 오른쪽으로 스와이프 → 이전 카드
+        showPrev();
+      } else if (dx < -threshold) {
+        // 왼쪽으로 스와이프 → 다음 카드
+        showNext();
+      }
+      touchStartX = null;
+      touchEndX = null;
+    });
+
+    // 키보드 (PC에서 테스트할 때)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === " ") showRandom();
+    });
+
+    // 초기화
+    if (imageList.length > 0) {
+      preloadImages();
+      loadSavedIndex();
+    }
+    updateView();
+  </script>
+</body>
+</html>
