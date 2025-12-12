@@ -629,6 +629,533 @@
         frontImage: "images/example_formula.png", // 직접 경로 수정
         backText: "이 이미지에 대한 핵심 요약/공식 설명",
       },
+  /* ============================
+     SPEED TEST 30 PROBLEMS
+  ============================ */
+  {
+    "id": "Q1",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q1\nSample mean n=50, σ known → 어떤 분포를 쓰는가?",
+    "backText": "정답: Z 분포\n해설: 표본 크기 크고 모표준편차 σ가 알려진 평균 문제는 Z 사용."
+  },
+  {
+    "id": "Q2",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q2\nSmall sample mean, σ unknown → 어떤 분포?",
+    "backText": "정답: t 분포\n해설: 작은 샘플 + σ unknown = t."
+  },
+  {
+    "id": "Q3",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q3\nProportion defective → 어떤 분포 사용?",
+    "backText": "정답: Z 분포(이항의 정규근사)\n해설: 비율 p의 CI/검정은 보통 Z."
+  },
+  {
+    "id": "Q4",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q4\nVariance CI → 어떤 분포?",
+    "backText": "정답: χ² 분포\n해설: 분산/표준편차의 CI는 χ²."
+  },
+  {
+    "id": "Q5",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q5\nCompare two variances → 어떤 검정?",
+    "backText": "정답: F-test\n해설: 두 분산 비교는 F."
+  },
+
+  {
+    "id": "Q6",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q6\nCount of failures per hour → 어떤 분포?",
+    "backText": "정답: Poisson\n해설: 일정 시간당 발생 건수는 포아송."
+  },
+
+  {
+    "id": "Q7",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q7\nExponential: 5 failures in 2000 hr → λ 추정은?",
+    "backText": "정답: λ = r / Σti\n해설: 지수분포에서 MLE는 r / 총 가동시간."
+  },
+
+  {
+    "id": "Q8",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q8\nr out of n pass/fail → 어떤 분포?",
+    "backText": "정답: Binomial\n해설: 이항형 성공/실패."
+  },
+
+  {
+    "id": "Q9",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q9\nNon-replacement sampling → 어떤 분포?",
+    "backText": "정답: Hypergeometric\n해설: 비복원추출은 초기하."
+  },
+
+  {
+    "id": "Q10",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q10\nWeibull β > 1 의미?",
+    "backText": "정답: Wear-out 증가 hazard\n해설: β>1은 시간 증가할수록 고장률 증가."
+  },
+
+  {
+    "id": "Q11",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q11\nB10 life 계산 기반 분포?",
+    "backText": "정답: Weibull\n해설: B-life 계산은 Weibull."
+  },
+
+  {
+    "id": "Q12",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q12\nRun rule 기반 분포?",
+    "backText": "정답: Normal\n해설: 관리도의 가정은 정규."
+  },
+
+  {
+    "id": "Q13",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q13\nCp/Cpk 계산 불량확률 기반 분포?",
+    "backText": "정답: Normal\n해설: 공정능력지수는 정규분포."
+  },
+
+  {
+    "id": "Q14",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q14\nConstant failure rate → 어떤 분포?",
+    "backText": "정답: Exponential\n해설: 고장률이 일정 = 지수분포."
+  },
+
+  {
+    "id": "Q15",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q15\nDecreasing hazard time to fail → 분포?",
+    "backText": "정답: Weibull(β < 1)\n해설: 초기고장 패턴."
+  },
+
+  {
+    "id": "Q16",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q16\nInfant mortality → 어떤 분포?",
+    "backText": "정답: Weibull β<1\n해설: 초기고장."
+  },
+
+  {
+    "id": "Q17",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q17\nANOVA → 어떤 분포 사용?",
+    "backText": "정답: F 분포\n해설: 요인분석은 F-test."
+  },
+
+  {
+    "id": "Q18",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q18\nS-bar chart의 통계적 기반?",
+    "backText": "정답: χ² 분포\n해설: 분산 기반 통계량."
+  },
+
+  {
+    "id": "Q19",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q19\nMTBF lower bound Type I → 어떤 분포?",
+    "backText": "정답: χ²\n해설: 지수분포 θ CI는 χ²."
+  },
+
+  {
+    "id": "Q20",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q20\nMTBF CI Type II → 어떤 분포?",
+    "backText": "정답: χ²\n해설: 고장중단 시험도 χ²."
+  },
+
+  {
+    "id": "Q21",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q21\nRegression slope test → 어떤 분포?",
+    "backText": "정답: t 분포\n해설: 회귀계수 검정은 t."
+  },
+
+  {
+    "id": "Q22",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q22\nλ estimation for exponential → 무엇의 합?",
+    "backText": "정답: λ=r/Σti\n해설: 총 노출시간 기반."
+  },
+
+  {
+    "id": "Q23",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q23\nHigh n, low p → 근사 분포?",
+    "backText": "정답: Poisson\n해설: 희귀확률 근사."
+  },
+
+  {
+    "id": "Q24",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q24\nk defects count → 어떤 분포?",
+    "backText": "정답: Poisson"
+  },
+
+  {
+    "id": "Q25",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q25\n3-sigma limits 기반 분포?",
+    "backText": "정답: Normal"
+  },
+
+  {
+    "id": "Q26",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q26\nExceed USL probability → 기반 분포?",
+    "backText": "정답: Normal"
+  },
+
+  {
+    "id": "Q27",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q27\nCentral Limit Theorem → 근사 분포?",
+    "backText": "정답: Normal"
+  },
+
+  {
+    "id": "Q28",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q28\nTwo-sample mean, equal var, σ unknown → 어떤 검정?",
+    "backText": "정답: pooled t-test"
+  },
+
+  {
+    "id": "Q29",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q29\nMean difference with σ known → 어떤 검정?",
+    "backText": "정답: 2-sample Z-test"
+  },
+
+  {
+    "id": "Q30",
+    "topic": "CRE Formula Deck",
+    "frontText": "Q30\nLot acceptance probability → 어떤 분포?",
+    "backText": "정답: Hypergeometric 또는 Binomial"
+  },
+
+  /* ============================
+     ADVANCED 50
+  ============================ */
+
+  {
+    "id": "Q31",
+    "topic": "CRE Formula Deck",
+    "frontText": "A1\nn=18, 평균 CI, σ unknown → 분포?",
+    "backText": "정답: t CI"
+  },
+  {
+    "id": "Q32",
+    "topic": "CRE Formula Deck",
+    "frontText": "A2\n불량률 99% 상한 → 공식?",
+    "backText": "정답: Z proportion CI"
+  },
+  {
+    "id": "Q33",
+    "topic": "CRE Formula Deck",
+    "frontText": "A3\nVariance > 0.002? → 어떤 검정?",
+    "backText": "정답: χ² variance test"
+  },
+  {
+    "id": "Q34",
+    "topic": "CRE Formula Deck",
+    "frontText": "A4\nσ known 두 평균 검정?",
+    "backText": "정답: Z-test"
+  },
+  {
+    "id": "Q35",
+    "topic": "CRE Formula Deck",
+    "frontText": "A5\n두 불량률 비교?",
+    "backText": "정답: 2-proportion Z-test"
+  },
+  {
+    "id": "Q36",
+    "topic": "CRE Formula Deck",
+    "frontText": "A6\n작은 샘플 두 평균, equal variance, σ unknown?",
+    "backText": "정답: pooled t-test"
+  },
+  {
+    "id": "Q37",
+    "topic": "CRE Formula Deck",
+    "frontText": "A7\nσ CI?",
+    "backText": "정답: χ²"
+  },
+  {
+    "id": "Q38",
+    "topic": "CRE Formula Deck",
+    "frontText": "A8\n두 분산 동일성?",
+    "backText": "정답: F-test"
+  },
+  {
+    "id": "Q39",
+    "topic": "CRE Formula Deck",
+    "frontText": "A9\np ≤ 0.005 단측검정?",
+    "backText": "정답: one-sided Z"
+  },
+  {
+    "id": "Q40",
+    "topic": "CRE Formula Deck",
+    "frontText": "A10\n평균 벗어남, σ unknown?",
+    "backText": "정답: t-test"
+  },
+
+  {
+    "id": "Q41",
+    "topic": "CRE Formula Deck",
+    "frontText": "A11\n두 평균 unequal variance?",
+    "backText": "정답: Welch t-test"
+  },
+  {
+    "id": "Q42",
+    "topic": "CRE Formula Deck",
+    "frontText": "A12\np1−p2 CI?",
+    "backText": "정답: Z proportion CI"
+  },
+  {
+    "id": "Q43",
+    "topic": "CRE Formula Deck",
+    "frontText": "A13\nMTTR mean CI?",
+    "backText": "정답: t CI"
+  },
+  {
+    "id": "Q44",
+    "topic": "CRE Formula Deck",
+    "frontText": "A14\n평균 > 목표값, σ known?",
+    "backText": "정답: one-sided Z-test"
+  },
+  {
+    "id": "Q45",
+    "topic": "CRE Formula Deck",
+    "frontText": "A15\nRare defects large n → 근사 분포?",
+    "backText": "정답: Poisson"
+  },
+
+  /* B */
+
+  {
+    "id": "Q46",
+    "topic": "CRE Formula Deck",
+    "frontText": "B1\nLOT200 비복원추출?",
+    "backText": "정답: Hypergeometric"
+  },
+  {
+    "id": "Q47",
+    "topic": "CRE Formula Deck",
+    "frontText": "B2\nAQL/LTPD 샘플계획?",
+    "backText": "정답: OC curve (Binomial/Hypergeometric)"
+  },
+  {
+    "id": "Q48",
+    "topic": "CRE Formula Deck",
+    "frontText": "B3\nppm defects 50k?",
+    "backText": "정답: Poisson"
+  },
+  {
+    "id": "Q49",
+    "topic": "CRE Formula Deck",
+    "frontText": "B4\nDaily defect count?",
+    "backText": "정답: Poisson"
+  },
+  {
+    "id": "Q50",
+    "topic": "CRE Formula Deck",
+    "frontText": "B5\nLot small, non replacement?",
+    "backText": "정답: Hypergeometric"
+  },
+
+  {
+    "id": "Q51",
+    "topic": "CRE Formula Deck",
+    "frontText": "B6\nFalse reject 줄이는 기준?",
+    "backText": "정답: OC curve 분석"
+  },
+  {
+    "id": "Q52",
+    "topic": "CRE Formula Deck",
+    "frontText": "B7\nLarge n, rare defect?",
+    "backText": "정답: Poisson"
+  },
+  {
+    "id": "Q53",
+    "topic": "CRE Formula Deck",
+    "frontText": "B8\nConsumer risk β?",
+    "backText": "정답: OC curve 파라미터"
+  },
+  {
+    "id": "Q54",
+    "topic": "CRE Formula Deck",
+    "frontText": "B9\nHyper → Binomial 근사 조건?",
+    "backText": "정답: Lot size ≫ sample size"
+  },
+  {
+    "id": "Q55",
+    "topic": "CRE Formula Deck",
+    "frontText": "B10\nCount/week?",
+    "backText": "정답: Poisson"
+  },
+
+  /* C */
+
+  {
+    "id": "Q56",
+    "topic": "CRE Formula Deck",
+    "frontText": "C1\nXbar ±3σ 근거?",
+    "backText": "정답: Normal"
+  },
+  {
+    "id": "Q57",
+    "topic": "CRE Formula Deck",
+    "frontText": "C2\nR-chart constants 기반?",
+    "backText": "정답: Range distribution"
+  },
+  {
+    "id": "Q58",
+    "topic": "CRE Formula Deck",
+    "frontText": "C3\nSbar chart 기반?",
+    "backText": "정답: χ²"
+  },
+  {
+    "id": "Q59",
+    "topic": "CRE Formula Deck",
+    "frontText": "C4\n자연변동 모델 분포?",
+    "backText": "정답: Normal"
+  },
+  {
+    "id": "Q60",
+    "topic": "CRE Formula Deck",
+    "frontText": "C5\nCpk 불량확률 분포?",
+    "backText": "정답: Normal"
+  },
+
+  {
+    "id": "Q61",
+    "topic": "CRE Formula Deck",
+    "frontText": "C6\n7-run 증가 원인?",
+    "backText": "정답: Special cause"
+  },
+  {
+    "id": "Q62",
+    "topic": "CRE Formula Deck",
+    "frontText": "C7\n평균 이동 검정 기반?",
+    "backText": "정답: t-test"
+  },
+  {
+    "id": "Q63",
+    "topic": "CRE Formula Deck",
+    "frontText": "C8\nσ 증가 여부 검정?",
+    "backText": "정답: χ² test"
+  },
+  {
+    "id": "Q64",
+    "topic": "CRE Formula Deck",
+    "frontText": "C9\nCp 계산 기반?",
+    "backText": "정답: Normal"
+  },
+  {
+    "id": "Q65",
+    "topic": "CRE Formula Deck",
+    "frontText": "C10\n정규 관리도 전제?",
+    "backText": "정답: Normal distribution"
+  },
+
+  /* D */
+
+  {
+    "id": "Q66",
+    "topic": "CRE Formula Deck",
+    "frontText": "D1\nType I MTBF lower bound?",
+    "backText": "정답: χ²"
+  },
+  {
+    "id": "Q67",
+    "topic": "CRE Formula Deck",
+    "frontText": "D2\nType II θ CI?",
+    "backText": "정답: χ²"
+  },
+  {
+    "id": "Q68",
+    "topic": "CRE Formula Deck",
+    "frontText": "D3\nλ MLE = ?",
+    "backText": "정답: r / Σti"
+  },
+  {
+    "id": "Q69",
+    "topic": "CRE Formula Deck",
+    "frontText": "D4\nWeibull MLE + censoring 필요항?",
+    "backText": "정답: Censoring likelihood term"
+  },
+  {
+    "id": "Q70",
+    "topic": "CRE Formula Deck",
+    "frontText": "D5\n검사 사이 고장?",
+    "backText": "정답: Interval censoring"
+  },
+
+  {
+    "id": "Q71",
+    "topic": "CRE Formula Deck",
+    "frontText": "D6\nIncreasing hazard 모수?",
+    "backText": "정답: β (β>1)"
+  },
+  {
+    "id": "Q72",
+    "topic": "CRE Formula Deck",
+    "frontText": "D7\nWeibull Plot 직선화?",
+    "backText": "정답: ln(ln(1/(1−F))) vs ln(t)"
+  },
+  {
+    "id": "Q73",
+    "topic": "CRE Formula Deck",
+    "frontText": "D8\nB10 life 공식?",
+    "backText": "정답: t = η(−ln(0.9))^(1/β)"
+  },
+  {
+    "id": "Q74",
+    "topic": "CRE Formula Deck",
+    "frontText": "D9\nβ<1 의미?",
+    "backText": "정답: Infant mortality"
+  },
+  {
+    "id": "Q75",
+    "topic": "CRE Formula Deck",
+    "frontText": "D10\nβ>1 의미?",
+    "backText": "정답: Wear-out"
+  },
+
+  {
+    "id": "Q76",
+    "topic": "CRE Formula Deck",
+    "frontText": "D11\nWeibull η 단위?",
+    "backText": "정답: 시간 단위 그대로"
+  },
+  {
+    "id": "Q77",
+    "topic": "CRE Formula Deck",
+    "frontText": "D12\n절단시간 다양한 경우?",
+    "backText": "정답: Multiple Type I censoring"
+  },
+  {
+    "id": "Q78",
+    "topic": "CRE Formula Deck",
+    "frontText": "D13\nType I θ 하한 분위수?",
+    "backText": "정답: χ² 상부 분위수"
+  },
+  {
+    "id": "Q79",
+    "topic": "CRE Formula Deck",
+    "frontText": "D14\nType II θ 상한 분위수?",
+    "backText": "정답: χ² 하부 분위수"
+  },
+  {
+    "id": "Q80",
+    "topic": "CRE Formula Deck",
+    "frontText": "D15\nN(t) 일정률 고장?",
+    "backText": "정답: Poisson"
+  },
     ];
 
     // ================================
