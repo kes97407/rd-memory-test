@@ -8,9 +8,7 @@
   />
   <title>CRE 수식 암기장</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -37,14 +35,9 @@
       align-items: center;
       padding: 4px 2px;
     }
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .counter {
-      font-size: 14px;
-      opacity: 0.8;
-    }
+    .title { font-size: 18px; font-weight: 700; }
+    .counter { font-size: 14px; opacity: 0.8; }
+
     .viewer {
       flex: 1;
       border-radius: 16px;
@@ -86,9 +79,7 @@
       text-align: center;
       gap: 10px;
     }
-    .side.active {
-      display: flex;
-    }
+    .side.active { display: flex; }
     .text-content {
       white-space: pre-line;
       font-size: 16px;
@@ -110,7 +101,7 @@
     .placeholder {
       text-align: center;
       font-size: 14px;
-      opacity: 0.8;
+      opacity: 0.85;
     }
     .hint {
       position: absolute;
@@ -125,9 +116,10 @@
       display: flex;
       gap: 8px;
       margin-top: 4px;
+      flex-wrap: wrap; /* 버튼이 많아져도 깨지지 않게 */
     }
     button {
-      flex: 1;
+      flex: 1 1 140px; /* 모바일에서 줄바꿈되도록 */
       padding: 11px 10px;
       border-radius: 999px;
       border: none;
@@ -137,16 +129,19 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-      transition: transform 0.08s ease, box-shadow 0.08s ease,
-        background 0.08s ease;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
     }
     button:active {
       transform: translateY(1px) scale(0.98);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
       background: #111827;
     }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .btn-main {
-      flex: 1.4;
+      flex: 1.4 1 180px;
       background: linear-gradient(135deg, #4f46e5, #06b6d4);
     }
     .btn-main:active {
@@ -160,6 +155,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <div class="header">
@@ -183,8 +179,7 @@
 
       <div class="placeholder" id="placeholder">
         아직 카드가 없습니다.<br /><br />
-        아래 코드의 <code>cards</code> 배열에 수식 카드들을
-        추가해주세요.
+        아래 코드의 <code>cards</code> 배열에 수식 카드들을 추가해주세요.
       </div>
 
       <div class="hint">
@@ -200,6 +195,8 @@
 
     <div class="controls">
       <button id="shuffleBtn">랜덤</button>
+      <button id="hideBtn">외움(숨기기)</button>
+      <button id="showHiddenBtn">숨김 보기: OFF</button>
       <button id="resetBtn">처음부터</button>
     </div>
 
@@ -211,8 +208,6 @@
   <script>
     // ================================
     // 1) CRE 수식 카드 데이터
-    //    - 필요하면 자유롭게 수정/추가
-    //    - frontImage / backImage 에 이미지 경로를 넣으면 이미지도 표시
     // ================================
     const cards = [
       // ---- 기본 개념 / 함수 관계 ----
@@ -321,7 +316,7 @@
           "Y = ln T ~ N(μ_Y, σ_Y²)\n\nR(t) = P(T > t)\n= P(Y > ln t)\n= 1 - Φ( (ln t - μ_Y)/σ_Y )",
       },
 
-      // ---- 시스템 신뢰도 (Series / Parallel / k-out-of-n) ----
+      // ---- 시스템 신뢰도 ----
       {
         id: "SYS_01",
         topic: "시스템 신뢰도",
@@ -358,7 +353,7 @@
           "2개 동일 지수분포(λ) 병렬\nR(t) = 1 - (1 - e^{-λt})² = 2e^{-λt} - e^{-2λt}\n\nλ(t) = f(t) / R(t) 로 계산\n(시간에 따라 변하는 비상수 hazard)",
       },
 
-      // ---- 중복/Hot standby 개념 카드 (공식 느낌 정리용) ----
+      // ---- 중복 ----
       {
         id: "RED_01",
         topic: "중복",
@@ -397,7 +392,7 @@
           "내재 가용도 A_i = MTBF / (MTBF + MTTR)\n(계획정지, 물류/대기시간 제외)\n\n운용 가용도 A_o = 가동시간 / (전체 달력시간)\n(모든 계획·비계획 정지 포함)",
       },
 
-      // ---- 신뢰도 시험(계수형) : binomial ----
+      // ---- 신뢰도 시험(계수형) ----
       {
         id: "TEST_01",
         topic: "계수형 신뢰도 시험",
@@ -424,13 +419,12 @@
       {
         id: "TEST_EXP_02",
         topic: "지수 수명시험",
-        frontText:
-          "지수분포 수명시험에서 λ의 신뢰구간 (χ² 이용, r 고장)",
+        frontText: "지수분포 수명시험에서 λ의 신뢰구간 (χ² 이용, r 고장)",
         backText:
           "하한: λ_L = (χ²_{2r, 1-α/2}) / (2T)\n상한: λ_U = (χ²_{2r, α/2}) / (2T)\n\n여기서 χ²_{ν, p} : 자유도 ν, 상위 p백분위수",
       },
 
-      // ---- 가속수명시험(ALT) 기본 ----
+      // ---- 가속수명시험(ALT) ----
       {
         id: "ALT_01",
         topic: "가속수명시험",
@@ -446,7 +440,7 @@
           "스트레스 S에서의 MTTF\nMTTF(S) = K S^{-n}\n\n로그 형태: ln(MTTF) = ln K - n ln S",
       },
 
-      // ---- 베이지안 / 업데이트 간단 ----
+      // ---- 베이지안 ----
       {
         id: "BAYES_01",
         topic: "베이지안 추정",
@@ -455,7 +449,7 @@
           "사전분포: λ ~ Gamma(α₀, β₀)\n시험결과: 총 시간 T, r 고장\n\n사후분포: λ | 데이터 ~ Gamma(α₀ + r, β₀ + T)",
       },
 
-      // ---- Duane 신뢰도 성장모델 개념 ----
+      // ---- Duane 성장모델 ----
       {
         id: "GROWTH_01",
         topic: "신뢰도 성장",
@@ -464,7 +458,7 @@
           "MTBF(t) = K t^{α}\n또는 누적 고장률 형태로 표현\n\n로그 선형식\nln(MTBF) = ln K + α ln t",
       },
 
-      // ---- 기타 자주 쓰는 관계식 ----
+      // ---- 기타 ----
       {
         id: "MISC_01",
         topic: "기타",
@@ -479,143 +473,145 @@
         backText:
           "지수분포, 직렬 시스템\nλ_sys = Σ λᵢ\nR_sys(t) = exp(-λ_sys t)",
       },
-// =========================
-// 추가 카드 (약한 부분 19개)
-// =========================
-  {
-    id: "WEAK_01",
-    topic: "계량형 샘플크기 공식",
-    frontText: "모평균 추정을 위한 샘플크기 공식",
-    backText:
-      "n = (Z_{α/2} · σ / E)^2\n\nσ: 표준편차(추정값)\nE: 허용오차 (±E)\n\n예시) σ=5, E=1, 신뢰수준 95% (Z=1.96)\n→ n = (1.96×5/1)^2 ≈ 96"
-  },
-  {
-    id: "WEAK_02",
-    topic: "공정능력·관리도 공식",
-    frontText: "공정능력지수 (Cp, Cpk, Pp, Ppk)",
-    backText:
-      "Cp = (USL - LSL) / (6σ)\nCpk = min[(USL - μ)/(3σ), (μ - LSL)/(3σ)]\n\nPp, Ppk는 장기 데이터 기준.\n\n관리도 경계: UCL = μ + 3σ/√n, LCL = μ - 3σ/√n"
-  },
-  {
-    id: "WEAK_03",
-    topic: "점추정 및 구간추정",
-    frontText: "모평균에 대한 신뢰구간 (σ 모름, t분포 사용)",
-    backText:
-      "μ ∈ [x̄ ± t_{α/2, n-1}·(s/√n)]\n\n모비율에 대한 구간: p̂ ± Z_{α/2}·√[p̂(1-p̂)/n]"
-  },
-  {
-    id: "WEAK_04",
-    topic: "1종·2종 절단시험",
-    frontText: "지수 수명시험 절단 공식",
-    backText:
-      "1종 절단(Type I): 일정시간 t₀까지 시험, 고장 r개\nλ̂ = r / (Σ t_i + (n - r)t₀)\n\n2종 절단(Type II): r번째 고장까지 시험, λ̂ = r / Σ t_i"
-  },
-  {
-    id: "WEAK_05",
-    topic: "변동·비율 신뢰구간",
-    frontText: "분산·비율 신뢰구간",
-    backText:
-      "모분산: (n−1)s² / χ²_{α/2,n−1} ≤ σ² ≤ (n−1)s² / χ²_{1−α/2,n−1}\n\n모비율: p̂ ± Z_{α/2}·√[p̂(1−p̂)/n]"
-  },
-  {
-    id: "WEAK_06",
-    topic: "Duane·AMSAA 모델",
-    frontText: "Duane/AMSAA 신뢰도성장모델",
-    backText:
-      "Duane: λ(t) = K t^{α−1}, MTBF(t)=K' t^{α}\nln(MTBF)=lnK'+α ln t\n\nAMSAA: N(t)=λ₀ t^{β}, λ(t)=βλ₀t^{β−1}"
-  },
-  {
-    id: "WEAK_07",
-    topic: "Median Rank / ERTO",
-    frontText: "중위순위(Median Rank) 공식",
-    backText:
-      "MR(i) = (i − 0.3)/(n + 0.4)\n\nERTO(Extended Rank Time Order): 절단데이터 보정 시 MR의 확장형"
-  },
-  {
-    id: "WEAK_08",
-    topic: "PRST 수식",
-    frontText: "PRST(Probability Ratio Sequential Test)",
-    backText:
-      "L = Π [ f(x_i|H₁) / f(x_i|H₀) ]\n\n로그 누적비로 판단:\nlnL ≥ A → H₁ 채택\nlnL ≤ B → H₀ 채택"
-  },
-  {
-    id: "WEAK_09",
-    topic: "고장 절단 포인트",
-    frontText: "절단 데이터 고장점 보정식",
-    backText:
-      "Type I 절단: 미고장 샘플은 시험종료시점 t₀으로 간주\n\n고장율 추정 λ̂ = r / (Σ 고장시간 + (n−r)t₀)"
-  },
-  {
-    id: "WEAK_10",
-    topic: "시험 중단 조건",
-    frontText: "정시·고장·교체 정시 중단시험",
-    backText:
-      "정시중단: 일정 시간 후 종료 (Type I)\n고장중단: r번째 고장 발생 시 종료 (Type II)\n교체 정시중단: 고장시 즉시 교체 후 t₀까지 지속, 총 누적시간 사용"
-  },
-  {
-    id: "WEAK_11",
-    topic: "베타분포·시료수 계산",
-    frontText: "베타분포 신뢰도 추정과 샘플크기",
-    backText:
-      "x 성공 / n 시험 → 사후분포 Beta(x+1, n−x+1)\n\n샘플크기: n = [Z_{α/2}²·p(1−p)] / E²"
-  },
-  {
-    id: "WEAK_12",
-    topic: "SW 결합주입",
-    frontText: "SW 결합주입(S/W Reliability Growth) 기본식",
-    backText:
-      "N(t)=a(1−e^{−bt})\nλ(t)=ab e^{−bt}\n\n신뢰도 성장 시험 중 발견·수정률 모델링용"
-  },
-  {
-    id: "WEAK_13",
-    topic: "병렬모델",
-    frontText: "능동/대기 병렬 시스템 신뢰도",
-    backText:
-      "능동 병렬: R=1−∏(1−R_i)\n대기 병렬(Cold standby): R=R₁+R₂(1−R₁)+…\nMTTF = (1/λ₁)+(1/λ₂)"
-  },
-  {
-    id: "WEAK_14",
-    topic: "능동·대기 리던던시",
-    frontText: "리던던시의 동등/비동등 고장률 공식",
-    backText:
-      "동등고장률(λ): 능동 R=1−(1−e^{−λt})^n\n대기(완벽스위칭): R=e^{−λ₁t}+λ₁/(λ₂−λ₁)(e^{−λ₁t}−e^{−λ₂t})"
-  },
-  {
-    id: "WEAK_15",
-    topic: "부하공유 병렬시스템",
-    frontText: "부하공유(Load-sharing) 병렬 공식",
-    backText:
-      "각 구성품 고장률이 부하분담에 따라 변화:\nλ_i(t)=λ₀·(P_i/P_total)^β\n\nβ>0이면 부하 집중시 고장률↑"
-  },
-  {
-    id: "WEAK_16",
-    topic: "공차구간·허용공차",
-    frontText: "공차구간(Tolerance Interval)",
-    backText:
-      "양측 공차구간: x̄ ± k·s\nk = k(α, P, n) from 표준표\n\n예: 95% 신뢰, 99% 포함 → k≈3.138 (n=10)"
-  },
-  {
-    id: "WEAK_17",
-    topic: "공차설계",
-    frontText: "Taguchi 공차설계 기본식",
-    backText:
-      "총변동 σ_y² = Σ (∂y/∂x_i)²·σ_i²\n\n경제적 공차설계: C_T = C_M + C_P\nC_P ∝ 1/t_i²"
-  },
-  {
-    id: "WEAK_18",
-    topic: "보전할당",
-    frontText: "보전성 할당 공식",
-    backText:
-      "목표 MDT 달성 위해 각 구성품 MTTR_i 배분\n\nΣ(MTTR_i·가중치_i) ≤ 목표 MDT"
-  },
-  {
-    id: "WEAK_19",
-    topic: "예비·교체 최적화",
-    frontText: "최적 교체·예비부품 수요 공식",
-    backText:
-      "교체주기: C_R(t)= (C_f·F(t)+C_m·R(t))/t 최소화\n예비품수요: N_s ≈ λ·T_op·(1+A_safety)"
-  },
-      // ---- 여기부터는 네가 추가할 수 있는 템플릿 카드 예시 ----
+
+      // =========================
+      // 추가 카드 (약한 부분 19개)
+      // =========================
+      {
+        id: "WEAK_01",
+        topic: "계량형 샘플크기 공식",
+        frontText: "모평균 추정을 위한 샘플크기 공식",
+        backText:
+          "n = (Z_{α/2} · σ / E)^2\n\nσ: 표준편차(추정값)\nE: 허용오차 (±E)\n\n예시) σ=5, E=1, 신뢰수준 95% (Z=1.96)\n→ n = (1.96×5/1)^2 ≈ 96"
+      },
+      {
+        id: "WEAK_02",
+        topic: "공정능력·관리도 공식",
+        frontText: "공정능력지수 (Cp, Cpk, Pp, Ppk)",
+        backText:
+          "Cp = (USL - LSL) / (6σ)\nCpk = min[(USL - μ)/(3σ), (μ - LSL)/(3σ)]\n\nPp, Ppk는 장기 데이터 기준.\n\n관리도 경계: UCL = μ + 3σ/√n, LCL = μ - 3σ/√n"
+      },
+      {
+        id: "WEAK_03",
+        topic: "점추정 및 구간추정",
+        frontText: "모평균에 대한 신뢰구간 (σ 모름, t분포 사용)",
+        backText:
+          "μ ∈ [x̄ ± t_{α/2, n-1}·(s/√n)]\n\n모비율에 대한 구간: p̂ ± Z_{α/2}·√[p̂(1-p̂)/n]"
+      },
+      {
+        id: "WEAK_04",
+        topic: "1종·2종 절단시험",
+        frontText: "지수 수명시험 절단 공식",
+        backText:
+          "1종 절단(Type I): 일정시간 t₀까지 시험, 고장 r개\nλ̂ = r / (Σ t_i + (n - r)t₀)\n\n2종 절단(Type II): r번째 고장까지 시험, λ̂ = r / Σ t_i"
+      },
+      {
+        id: "WEAK_05",
+        topic: "변동·비율 신뢰구간",
+        frontText: "분산·비율 신뢰구간",
+        backText:
+          "모분산: (n−1)s² / χ²_{α/2,n−1} ≤ σ² ≤ (n−1)s² / χ²_{1−α/2,n−1}\n\n모비율: p̂ ± Z_{α/2}·√[p̂(1−p̂)/n]"
+      },
+      {
+        id: "WEAK_06",
+        topic: "Duane·AMSAA 모델",
+        frontText: "Duane/AMSAA 신뢰도성장모델",
+        backText:
+          "Duane: λ(t) = K t^{α−1}, MTBF(t)=K' t^{α}\nln(MTBF)=lnK'+α ln t\n\nAMSAA: N(t)=λ₀ t^{β}, λ(t)=βλ₀t^{β−1}"
+      },
+      {
+        id: "WEAK_07",
+        topic: "Median Rank / ERTO",
+        frontText: "중위순위(Median Rank) 공식",
+        backText:
+          "MR(i) = (i − 0.3)/(n + 0.4)\n\nERTO(Extended Rank Time Order): 절단데이터 보정 시 MR의 확장형"
+      },
+      {
+        id: "WEAK_08",
+        topic: "PRST 수식",
+        frontText: "PRST(Probability Ratio Sequential Test)",
+        backText:
+          "L = Π [ f(x_i|H₁) / f(x_i|H₀) ]\n\n로그 누적비로 판단:\nlnL ≥ A → H₁ 채택\nlnL ≤ B → H₀ 채택"
+      },
+      {
+        id: "WEAK_09",
+        topic: "고장 절단 포인트",
+        frontText: "절단 데이터 고장점 보정식",
+        backText:
+          "Type I 절단: 미고장 샘플은 시험종료시점 t₀으로 간주\n\n고장율 추정 λ̂ = r / (Σ 고장시간 + (n−r)t₀)"
+      },
+      {
+        id: "WEAK_10",
+        topic: "시험 중단 조건",
+        frontText: "정시·고장·교체 정시 중단시험",
+        backText:
+          "정시중단: 일정 시간 후 종료 (Type I)\n고장중단: r번째 고장 발생 시 종료 (Type II)\n교체 정시중단: 고장시 즉시 교체 후 t₀까지 지속, 총 누적시간 사용"
+      },
+      {
+        id: "WEAK_11",
+        topic: "베타분포·시료수 계산",
+        frontText: "베타분포 신뢰도 추정과 샘플크기",
+        backText:
+          "x 성공 / n 시험 → 사후분포 Beta(x+1, n−x+1)\n\n샘플크기: n = [Z_{α/2}²·p(1−p)] / E²"
+      },
+      {
+        id: "WEAK_12",
+        topic: "SW 결합주입",
+        frontText: "SW 결합주입(S/W Reliability Growth) 기본식",
+        backText:
+          "N(t)=a(1−e^{−bt})\nλ(t)=ab e^{−bt}\n\n신뢰도 성장 시험 중 발견·수정률 모델링용"
+      },
+      {
+        id: "WEAK_13",
+        topic: "병렬모델",
+        frontText: "능동/대기 병렬 시스템 신뢰도",
+        backText:
+          "능동 병렬: R=1−∏(1−R_i)\n대기 병렬(Cold standby): R=R₁+R₂(1−R₁)+…\nMTTF = (1/λ₁)+(1/λ₂)"
+      },
+      {
+        id: "WEAK_14",
+        topic: "능동·대기 리던던시",
+        frontText: "리던던시의 동등/비동등 고장률 공식",
+        backText:
+          "동등고장률(λ): 능동 R=1−(1−e^{−λt})^n\n대기(완벽스위칭): R=e^{−λ₁t}+λ₁/(λ₂−λ₁)(e^{−λ₁t}−e^{−λ₂t})"
+      },
+      {
+        id: "WEAK_15",
+        topic: "부하공유 병렬시스템",
+        frontText: "부하공유(Load-sharing) 병렬 공식",
+        backText:
+          "각 구성품 고장률이 부하분담에 따라 변화:\nλ_i(t)=λ₀·(P_i/P_total)^β\n\nβ>0이면 부하 집중시 고장률↑"
+      },
+      {
+        id: "WEAK_16",
+        topic: "공차구간·허용공차",
+        frontText: "공차구간(Tolerance Interval)",
+        backText:
+          "양측 공차구간: x̄ ± k·s\nk = k(α, P, n) from 표준표\n\n예: 95% 신뢰, 99% 포함 → k≈3.138 (n=10)"
+      },
+      {
+        id: "WEAK_17",
+        topic: "공차설계",
+        frontText: "Taguchi 공차설계 기본식",
+        backText:
+          "총변동 σ_y² = Σ (∂y/∂x_i)²·σ_i²\n\n경제적 공차설계: C_T = C_M + C_P\nC_P ∝ 1/t_i²"
+      },
+      {
+        id: "WEAK_18",
+        topic: "보전할당",
+        frontText: "보전성 할당 공식",
+        backText:
+          "목표 MDT 달성 위해 각 구성품 MTTR_i 배분\n\nΣ(MTTR_i·가중치_i) ≤ 목표 MDT"
+      },
+      {
+        id: "WEAK_19",
+        topic: "예비·교체 최적화",
+        frontText: "최적 교체·예비부품 수요 공식",
+        backText:
+          "교체주기: C_R(t)= (C_f·F(t)+C_m·R(t))/t 최소화\n예비품수요: N_s ≈ λ·T_op·(1+A_safety)"
+      },
+
+      // ---- 템플릿 ----
       {
         id: "TEMPLATE_TEXT",
         topic: "템플릿",
@@ -626,536 +622,497 @@
         id: "TEMPLATE_IMAGE",
         topic: "템플릿",
         frontText: "이미지로 된 수식/그래프 (앞면에 그림)",
-        frontImage: "images/example_formula.png", // 직접 경로 수정
+        frontImage: "images/example_formula.png",
         backText: "이 이미지에 대한 핵심 요약/공식 설명",
       },
-  /* ============================
-     SPEED TEST 30 PROBLEMS
-  ============================ */
-  {
-    "id": "Q1",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q1\nSample mean n=50, σ known → 어떤 분포를 쓰는가?",
-    "backText": "정답: Z 분포\n해설: 표본 크기 크고 모표준편차 σ가 알려진 평균 문제는 Z 사용."
-  },
-  {
-    "id": "Q2",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q2\nSmall sample mean, σ unknown → 어떤 분포?",
-    "backText": "정답: t 분포\n해설: 작은 샘플 + σ unknown = t."
-  },
-  {
-    "id": "Q3",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q3\nProportion defective → 어떤 분포 사용?",
-    "backText": "정답: Z 분포(이항의 정규근사)\n해설: 비율 p의 CI/검정은 보통 Z."
-  },
-  {
-    "id": "Q4",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q4\nVariance CI → 어떤 분포?",
-    "backText": "정답: χ² 분포\n해설: 분산/표준편차의 CI는 χ²."
-  },
-  {
-    "id": "Q5",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q5\nCompare two variances → 어떤 검정?",
-    "backText": "정답: F-test\n해설: 두 분산 비교는 F."
-  },
 
-  {
-    "id": "Q6",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q6\nCount of failures per hour → 어떤 분포?",
-    "backText": "정답: Poisson\n해설: 일정 시간당 발생 건수는 포아송."
-  },
+      /* ============================
+         SPEED TEST 30 PROBLEMS
+      ============================ */
+      {
+        "id": "Q1",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q1\nSample mean n=50, σ known → 어떤 분포를 쓰는가?",
+        "backText": "정답: Z 분포\n해설: 표본 크기 크고 모표준편차 σ가 알려진 평균 문제는 Z 사용."
+      },
+      {
+        "id": "Q2",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q2\nSmall sample mean, σ unknown → 어떤 분포?",
+        "backText": "정답: t 분포\n해설: 작은 샘플 + σ unknown = t."
+      },
+      {
+        "id": "Q3",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q3\nProportion defective → 어떤 분포 사용?",
+        "backText": "정답: Z 분포(이항의 정규근사)\n해설: 비율 p의 CI/검정은 보통 Z."
+      },
+      {
+        "id": "Q4",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q4\nVariance CI → 어떤 분포?",
+        "backText": "정답: χ² 분포\n해설: 분산/표준편차의 CI는 χ²."
+      },
+      {
+        "id": "Q5",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q5\nCompare two variances → 어떤 검정?",
+        "backText": "정답: F-test\n해설: 두 분산 비교는 F."
+      },
+      {
+        "id": "Q6",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q6\nCount of failures per hour → 어떤 분포?",
+        "backText": "정답: Poisson\n해설: 일정 시간당 발생 건수는 포아송."
+      },
+      {
+        "id": "Q7",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q7\nExponential: 5 failures in 2000 hr → λ 추정은?",
+        "backText": "정답: λ = r / Σti\n해설: 지수분포에서 MLE는 r / 총 가동시간."
+      },
+      {
+        "id": "Q8",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q8\nr out of n pass/fail → 어떤 분포?",
+        "backText": "정답: Binomial\n해설: 이항형 성공/실패."
+      },
+      {
+        "id": "Q9",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q9\nNon-replacement sampling → 어떤 분포?",
+        "backText": "정답: Hypergeometric\n해설: 비복원추출은 초기하."
+      },
+      {
+        "id": "Q10",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q10\nWeibull β > 1 의미?",
+        "backText": "정답: Wear-out 증가 hazard\n해설: β>1은 시간 증가할수록 고장률 증가."
+      },
+      {
+        "id": "Q11",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q11\nB10 life 계산 기반 분포?",
+        "backText": "정답: Weibull\n해설: B-life 계산은 Weibull."
+      },
+      {
+        "id": "Q12",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q12\nRun rule 기반 분포?",
+        "backText": "정답: Normal\n해설: 관리도의 가정은 정규."
+      },
+      {
+        "id": "Q13",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q13\nCp/Cpk 계산 불량확률 기반 분포?",
+        "backText": "정답: Normal\n해설: 공정능력지수는 정규분포."
+      },
+      {
+        "id": "Q14",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q14\nConstant failure rate → 어떤 분포?",
+        "backText": "정답: Exponential\n해설: 고장률이 일정 = 지수분포."
+      },
+      {
+        "id": "Q15",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q15\nDecreasing hazard time to fail → 분포?",
+        "backText": "정답: Weibull(β < 1)\n해설: 초기고장 패턴."
+      },
+      {
+        "id": "Q16",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q16\nInfant mortality → 어떤 분포?",
+        "backText": "정답: Weibull β<1\n해설: 초기고장."
+      },
+      {
+        "id": "Q17",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q17\nANOVA → 어떤 분포 사용?",
+        "backText": "정답: F 분포\n해설: 요인분석은 F-test."
+      },
+      {
+        "id": "Q18",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q18\nS-bar chart의 통계적 기반?",
+        "backText": "정답: χ² 분포\n해설: 분산 기반 통계량."
+      },
+      {
+        "id": "Q19",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q19\nMTBF lower bound Type I → 어떤 분포?",
+        "backText": "정답: χ²\n해설: 지수분포 θ CI는 χ²."
+      },
+      {
+        "id": "Q20",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q20\nMTBF CI Type II → 어떤 분포?",
+        "backText": "정답: χ²\n해설: 고장중단 시험도 χ²."
+      },
+      {
+        "id": "Q21",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q21\nRegression slope test → 어떤 분포?",
+        "backText": "정답: t 분포\n해설: 회귀계수 검정은 t."
+      },
+      {
+        "id": "Q22",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q22\nλ estimation for exponential → 무엇의 합?",
+        "backText": "정답: λ=r/Σti\n해설: 총 노출시간 기반."
+      },
+      {
+        "id": "Q23",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q23\nHigh n, low p → 근사 분포?",
+        "backText": "정답: Poisson\n해설: 희귀확률 근사."
+      },
+      {
+        "id": "Q24",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q24\nk defects count → 어떤 분포?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q25",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q25\n3-sigma limits 기반 분포?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q26",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q26\nExceed USL probability → 기반 분포?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q27",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q27\nCentral Limit Theorem → 근사 분포?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q28",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q28\nTwo-sample mean, equal var, σ unknown → 어떤 검정?",
+        "backText": "정답: pooled t-test"
+      },
+      {
+        "id": "Q29",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q29\nMean difference with σ known → 어떤 검정?",
+        "backText": "정답: 2-sample Z-test"
+      },
+      {
+        "id": "Q30",
+        "topic": "CRE Formula Deck",
+        "frontText": "Q30\nLot acceptance probability → 어떤 분포?",
+        "backText": "정답: Hypergeometric 또는 Binomial"
+      },
 
-  {
-    "id": "Q7",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q7\nExponential: 5 failures in 2000 hr → λ 추정은?",
-    "backText": "정답: λ = r / Σti\n해설: 지수분포에서 MLE는 r / 총 가동시간."
-  },
-
-  {
-    "id": "Q8",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q8\nr out of n pass/fail → 어떤 분포?",
-    "backText": "정답: Binomial\n해설: 이항형 성공/실패."
-  },
-
-  {
-    "id": "Q9",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q9\nNon-replacement sampling → 어떤 분포?",
-    "backText": "정답: Hypergeometric\n해설: 비복원추출은 초기하."
-  },
-
-  {
-    "id": "Q10",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q10\nWeibull β > 1 의미?",
-    "backText": "정답: Wear-out 증가 hazard\n해설: β>1은 시간 증가할수록 고장률 증가."
-  },
-
-  {
-    "id": "Q11",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q11\nB10 life 계산 기반 분포?",
-    "backText": "정답: Weibull\n해설: B-life 계산은 Weibull."
-  },
-
-  {
-    "id": "Q12",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q12\nRun rule 기반 분포?",
-    "backText": "정답: Normal\n해설: 관리도의 가정은 정규."
-  },
-
-  {
-    "id": "Q13",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q13\nCp/Cpk 계산 불량확률 기반 분포?",
-    "backText": "정답: Normal\n해설: 공정능력지수는 정규분포."
-  },
-
-  {
-    "id": "Q14",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q14\nConstant failure rate → 어떤 분포?",
-    "backText": "정답: Exponential\n해설: 고장률이 일정 = 지수분포."
-  },
-
-  {
-    "id": "Q15",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q15\nDecreasing hazard time to fail → 분포?",
-    "backText": "정답: Weibull(β < 1)\n해설: 초기고장 패턴."
-  },
-
-  {
-    "id": "Q16",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q16\nInfant mortality → 어떤 분포?",
-    "backText": "정답: Weibull β<1\n해설: 초기고장."
-  },
-
-  {
-    "id": "Q17",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q17\nANOVA → 어떤 분포 사용?",
-    "backText": "정답: F 분포\n해설: 요인분석은 F-test."
-  },
-
-  {
-    "id": "Q18",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q18\nS-bar chart의 통계적 기반?",
-    "backText": "정답: χ² 분포\n해설: 분산 기반 통계량."
-  },
-
-  {
-    "id": "Q19",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q19\nMTBF lower bound Type I → 어떤 분포?",
-    "backText": "정답: χ²\n해설: 지수분포 θ CI는 χ²."
-  },
-
-  {
-    "id": "Q20",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q20\nMTBF CI Type II → 어떤 분포?",
-    "backText": "정답: χ²\n해설: 고장중단 시험도 χ²."
-  },
-
-  {
-    "id": "Q21",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q21\nRegression slope test → 어떤 분포?",
-    "backText": "정답: t 분포\n해설: 회귀계수 검정은 t."
-  },
-
-  {
-    "id": "Q22",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q22\nλ estimation for exponential → 무엇의 합?",
-    "backText": "정답: λ=r/Σti\n해설: 총 노출시간 기반."
-  },
-
-  {
-    "id": "Q23",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q23\nHigh n, low p → 근사 분포?",
-    "backText": "정답: Poisson\n해설: 희귀확률 근사."
-  },
-
-  {
-    "id": "Q24",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q24\nk defects count → 어떤 분포?",
-    "backText": "정답: Poisson"
-  },
-
-  {
-    "id": "Q25",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q25\n3-sigma limits 기반 분포?",
-    "backText": "정답: Normal"
-  },
-
-  {
-    "id": "Q26",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q26\nExceed USL probability → 기반 분포?",
-    "backText": "정답: Normal"
-  },
-
-  {
-    "id": "Q27",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q27\nCentral Limit Theorem → 근사 분포?",
-    "backText": "정답: Normal"
-  },
-
-  {
-    "id": "Q28",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q28\nTwo-sample mean, equal var, σ unknown → 어떤 검정?",
-    "backText": "정답: pooled t-test"
-  },
-
-  {
-    "id": "Q29",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q29\nMean difference with σ known → 어떤 검정?",
-    "backText": "정답: 2-sample Z-test"
-  },
-
-  {
-    "id": "Q30",
-    "topic": "CRE Formula Deck",
-    "frontText": "Q30\nLot acceptance probability → 어떤 분포?",
-    "backText": "정답: Hypergeometric 또는 Binomial"
-  },
-
-  /* ============================
-     ADVANCED 50
-  ============================ */
-
-  {
-    "id": "Q31",
-    "topic": "CRE Formula Deck",
-    "frontText": "A1\nn=18, 평균 CI, σ unknown → 분포?",
-    "backText": "정답: t CI"
-  },
-  {
-    "id": "Q32",
-    "topic": "CRE Formula Deck",
-    "frontText": "A2\n불량률 99% 상한 → 공식?",
-    "backText": "정답: Z proportion CI"
-  },
-  {
-    "id": "Q33",
-    "topic": "CRE Formula Deck",
-    "frontText": "A3\nVariance > 0.002? → 어떤 검정?",
-    "backText": "정답: χ² variance test"
-  },
-  {
-    "id": "Q34",
-    "topic": "CRE Formula Deck",
-    "frontText": "A4\nσ known 두 평균 검정?",
-    "backText": "정답: Z-test"
-  },
-  {
-    "id": "Q35",
-    "topic": "CRE Formula Deck",
-    "frontText": "A5\n두 불량률 비교?",
-    "backText": "정답: 2-proportion Z-test"
-  },
-  {
-    "id": "Q36",
-    "topic": "CRE Formula Deck",
-    "frontText": "A6\n작은 샘플 두 평균, equal variance, σ unknown?",
-    "backText": "정답: pooled t-test"
-  },
-  {
-    "id": "Q37",
-    "topic": "CRE Formula Deck",
-    "frontText": "A7\nσ CI?",
-    "backText": "정답: χ²"
-  },
-  {
-    "id": "Q38",
-    "topic": "CRE Formula Deck",
-    "frontText": "A8\n두 분산 동일성?",
-    "backText": "정답: F-test"
-  },
-  {
-    "id": "Q39",
-    "topic": "CRE Formula Deck",
-    "frontText": "A9\np ≤ 0.005 단측검정?",
-    "backText": "정답: one-sided Z"
-  },
-  {
-    "id": "Q40",
-    "topic": "CRE Formula Deck",
-    "frontText": "A10\n평균 벗어남, σ unknown?",
-    "backText": "정답: t-test"
-  },
-
-  {
-    "id": "Q41",
-    "topic": "CRE Formula Deck",
-    "frontText": "A11\n두 평균 unequal variance?",
-    "backText": "정답: Welch t-test"
-  },
-  {
-    "id": "Q42",
-    "topic": "CRE Formula Deck",
-    "frontText": "A12\np1−p2 CI?",
-    "backText": "정답: Z proportion CI"
-  },
-  {
-    "id": "Q43",
-    "topic": "CRE Formula Deck",
-    "frontText": "A13\nMTTR mean CI?",
-    "backText": "정답: t CI"
-  },
-  {
-    "id": "Q44",
-    "topic": "CRE Formula Deck",
-    "frontText": "A14\n평균 > 목표값, σ known?",
-    "backText": "정답: one-sided Z-test"
-  },
-  {
-    "id": "Q45",
-    "topic": "CRE Formula Deck",
-    "frontText": "A15\nRare defects large n → 근사 분포?",
-    "backText": "정답: Poisson"
-  },
-
-  /* B */
-
-  {
-    "id": "Q46",
-    "topic": "CRE Formula Deck",
-    "frontText": "B1\nLOT200 비복원추출?",
-    "backText": "정답: Hypergeometric"
-  },
-  {
-    "id": "Q47",
-    "topic": "CRE Formula Deck",
-    "frontText": "B2\nAQL/LTPD 샘플계획?",
-    "backText": "정답: OC curve (Binomial/Hypergeometric)"
-  },
-  {
-    "id": "Q48",
-    "topic": "CRE Formula Deck",
-    "frontText": "B3\nppm defects 50k?",
-    "backText": "정답: Poisson"
-  },
-  {
-    "id": "Q49",
-    "topic": "CRE Formula Deck",
-    "frontText": "B4\nDaily defect count?",
-    "backText": "정답: Poisson"
-  },
-  {
-    "id": "Q50",
-    "topic": "CRE Formula Deck",
-    "frontText": "B5\nLot small, non replacement?",
-    "backText": "정답: Hypergeometric"
-  },
-
-  {
-    "id": "Q51",
-    "topic": "CRE Formula Deck",
-    "frontText": "B6\nFalse reject 줄이는 기준?",
-    "backText": "정답: OC curve 분석"
-  },
-  {
-    "id": "Q52",
-    "topic": "CRE Formula Deck",
-    "frontText": "B7\nLarge n, rare defect?",
-    "backText": "정답: Poisson"
-  },
-  {
-    "id": "Q53",
-    "topic": "CRE Formula Deck",
-    "frontText": "B8\nConsumer risk β?",
-    "backText": "정답: OC curve 파라미터"
-  },
-  {
-    "id": "Q54",
-    "topic": "CRE Formula Deck",
-    "frontText": "B9\nHyper → Binomial 근사 조건?",
-    "backText": "정답: Lot size ≫ sample size"
-  },
-  {
-    "id": "Q55",
-    "topic": "CRE Formula Deck",
-    "frontText": "B10\nCount/week?",
-    "backText": "정답: Poisson"
-  },
-
-  /* C */
-
-  {
-    "id": "Q56",
-    "topic": "CRE Formula Deck",
-    "frontText": "C1\nXbar ±3σ 근거?",
-    "backText": "정답: Normal"
-  },
-  {
-    "id": "Q57",
-    "topic": "CRE Formula Deck",
-    "frontText": "C2\nR-chart constants 기반?",
-    "backText": "정답: Range distribution"
-  },
-  {
-    "id": "Q58",
-    "topic": "CRE Formula Deck",
-    "frontText": "C3\nSbar chart 기반?",
-    "backText": "정답: χ²"
-  },
-  {
-    "id": "Q59",
-    "topic": "CRE Formula Deck",
-    "frontText": "C4\n자연변동 모델 분포?",
-    "backText": "정답: Normal"
-  },
-  {
-    "id": "Q60",
-    "topic": "CRE Formula Deck",
-    "frontText": "C5\nCpk 불량확률 분포?",
-    "backText": "정답: Normal"
-  },
-
-  {
-    "id": "Q61",
-    "topic": "CRE Formula Deck",
-    "frontText": "C6\n7-run 증가 원인?",
-    "backText": "정답: Special cause"
-  },
-  {
-    "id": "Q62",
-    "topic": "CRE Formula Deck",
-    "frontText": "C7\n평균 이동 검정 기반?",
-    "backText": "정답: t-test"
-  },
-  {
-    "id": "Q63",
-    "topic": "CRE Formula Deck",
-    "frontText": "C8\nσ 증가 여부 검정?",
-    "backText": "정답: χ² test"
-  },
-  {
-    "id": "Q64",
-    "topic": "CRE Formula Deck",
-    "frontText": "C9\nCp 계산 기반?",
-    "backText": "정답: Normal"
-  },
-  {
-    "id": "Q65",
-    "topic": "CRE Formula Deck",
-    "frontText": "C10\n정규 관리도 전제?",
-    "backText": "정답: Normal distribution"
-  },
-
-  /* D */
-
-  {
-    "id": "Q66",
-    "topic": "CRE Formula Deck",
-    "frontText": "D1\nType I MTBF lower bound?",
-    "backText": "정답: χ²"
-  },
-  {
-    "id": "Q67",
-    "topic": "CRE Formula Deck",
-    "frontText": "D2\nType II θ CI?",
-    "backText": "정답: χ²"
-  },
-  {
-    "id": "Q68",
-    "topic": "CRE Formula Deck",
-    "frontText": "D3\nλ MLE = ?",
-    "backText": "정답: r / Σti"
-  },
-  {
-    "id": "Q69",
-    "topic": "CRE Formula Deck",
-    "frontText": "D4\nWeibull MLE + censoring 필요항?",
-    "backText": "정답: Censoring likelihood term"
-  },
-  {
-    "id": "Q70",
-    "topic": "CRE Formula Deck",
-    "frontText": "D5\n검사 사이 고장?",
-    "backText": "정답: Interval censoring"
-  },
-
-  {
-    "id": "Q71",
-    "topic": "CRE Formula Deck",
-    "frontText": "D6\nIncreasing hazard 모수?",
-    "backText": "정답: β (β>1)"
-  },
-  {
-    "id": "Q72",
-    "topic": "CRE Formula Deck",
-    "frontText": "D7\nWeibull Plot 직선화?",
-    "backText": "정답: ln(ln(1/(1−F))) vs ln(t)"
-  },
-  {
-    "id": "Q73",
-    "topic": "CRE Formula Deck",
-    "frontText": "D8\nB10 life 공식?",
-    "backText": "정답: t = η(−ln(0.9))^(1/β)"
-  },
-  {
-    "id": "Q74",
-    "topic": "CRE Formula Deck",
-    "frontText": "D9\nβ<1 의미?",
-    "backText": "정답: Infant mortality"
-  },
-  {
-    "id": "Q75",
-    "topic": "CRE Formula Deck",
-    "frontText": "D10\nβ>1 의미?",
-    "backText": "정답: Wear-out"
-  },
-
-  {
-    "id": "Q76",
-    "topic": "CRE Formula Deck",
-    "frontText": "D11\nWeibull η 단위?",
-    "backText": "정답: 시간 단위 그대로"
-  },
-  {
-    "id": "Q77",
-    "topic": "CRE Formula Deck",
-    "frontText": "D12\n절단시간 다양한 경우?",
-    "backText": "정답: Multiple Type I censoring"
-  },
-  {
-    "id": "Q78",
-    "topic": "CRE Formula Deck",
-    "frontText": "D13\nType I θ 하한 분위수?",
-    "backText": "정답: χ² 상부 분위수"
-  },
-  {
-    "id": "Q79",
-    "topic": "CRE Formula Deck",
-    "frontText": "D14\nType II θ 상한 분위수?",
-    "backText": "정답: χ² 하부 분위수"
-  },
-  {
-    "id": "Q80",
-    "topic": "CRE Formula Deck",
-    "frontText": "D15\nN(t) 일정률 고장?",
-    "backText": "정답: Poisson"
-  },
+      /* ============================
+         ADVANCED 50
+      ============================ */
+      {
+        "id": "Q31",
+        "topic": "CRE Formula Deck",
+        "frontText": "A1\nn=18, 평균 CI, σ unknown → 분포?",
+        "backText": "정답: t CI"
+      },
+      {
+        "id": "Q32",
+        "topic": "CRE Formula Deck",
+        "frontText": "A2\n불량률 99% 상한 → 공식?",
+        "backText": "정답: Z proportion CI"
+      },
+      {
+        "id": "Q33",
+        "topic": "CRE Formula Deck",
+        "frontText": "A3\nVariance > 0.002? → 어떤 검정?",
+        "backText": "정답: χ² variance test"
+      },
+      {
+        "id": "Q34",
+        "topic": "CRE Formula Deck",
+        "frontText": "A4\nσ known 두 평균 검정?",
+        "backText": "정답: Z-test"
+      },
+      {
+        "id": "Q35",
+        "topic": "CRE Formula Deck",
+        "frontText": "A5\n두 불량률 비교?",
+        "backText": "정답: 2-proportion Z-test"
+      },
+      {
+        "id": "Q36",
+        "topic": "CRE Formula Deck",
+        "frontText": "A6\n작은 샘플 두 평균, equal variance, σ unknown?",
+        "backText": "정답: pooled t-test"
+      },
+      {
+        "id": "Q37",
+        "topic": "CRE Formula Deck",
+        "frontText": "A7\nσ CI?",
+        "backText": "정답: χ²"
+      },
+      {
+        "id": "Q38",
+        "topic": "CRE Formula Deck",
+        "frontText": "A8\n두 분산 동일성?",
+        "backText": "정답: F-test"
+      },
+      {
+        "id": "Q39",
+        "topic": "CRE Formula Deck",
+        "frontText": "A9\np ≤ 0.005 단측검정?",
+        "backText": "정답: one-sided Z"
+      },
+      {
+        "id": "Q40",
+        "topic": "CRE Formula Deck",
+        "frontText": "A10\n평균 벗어남, σ unknown?",
+        "backText": "정답: t-test"
+      },
+      {
+        "id": "Q41",
+        "topic": "CRE Formula Deck",
+        "frontText": "A11\n두 평균 unequal variance?",
+        "backText": "정답: Welch t-test"
+      },
+      {
+        "id": "Q42",
+        "topic": "CRE Formula Deck",
+        "frontText": "A12\np1−p2 CI?",
+        "backText": "정답: Z proportion CI"
+      },
+      {
+        "id": "Q43",
+        "topic": "CRE Formula Deck",
+        "frontText": "A13\nMTTR mean CI?",
+        "backText": "정답: t CI"
+      },
+      {
+        "id": "Q44",
+        "topic": "CRE Formula Deck",
+        "frontText": "A14\n평균 > 목표값, σ known?",
+        "backText": "정답: one-sided Z-test"
+      },
+      {
+        "id": "Q45",
+        "topic": "CRE Formula Deck",
+        "frontText": "A15\nRare defects large n → 근사 분포?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q46",
+        "topic": "CRE Formula Deck",
+        "frontText": "B1\nLOT200 비복원추출?",
+        "backText": "정답: Hypergeometric"
+      },
+      {
+        "id": "Q47",
+        "topic": "CRE Formula Deck",
+        "frontText": "B2\nAQL/LTPD 샘플계획?",
+        "backText": "정답: OC curve (Binomial/Hypergeometric)"
+      },
+      {
+        "id": "Q48",
+        "topic": "CRE Formula Deck",
+        "frontText": "B3\nppm defects 50k?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q49",
+        "topic": "CRE Formula Deck",
+        "frontText": "B4\nDaily defect count?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q50",
+        "topic": "CRE Formula Deck",
+        "frontText": "B5\nLot small, non replacement?",
+        "backText": "정답: Hypergeometric"
+      },
+      {
+        "id": "Q51",
+        "topic": "CRE Formula Deck",
+        "frontText": "B6\nFalse reject 줄이는 기준?",
+        "backText": "정답: OC curve 분석"
+      },
+      {
+        "id": "Q52",
+        "topic": "CRE Formula Deck",
+        "frontText": "B7\nLarge n, rare defect?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q53",
+        "topic": "CRE Formula Deck",
+        "frontText": "B8\nConsumer risk β?",
+        "backText": "정답: OC curve 파라미터"
+      },
+      {
+        "id": "Q54",
+        "topic": "CRE Formula Deck",
+        "frontText": "B9\nHyper → Binomial 근사 조건?",
+        "backText": "정답: Lot size ≫ sample size"
+      },
+      {
+        "id": "Q55",
+        "topic": "CRE Formula Deck",
+        "frontText": "B10\nCount/week?",
+        "backText": "정답: Poisson"
+      },
+      {
+        "id": "Q56",
+        "topic": "CRE Formula Deck",
+        "frontText": "C1\nXbar ±3σ 근거?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q57",
+        "topic": "CRE Formula Deck",
+        "frontText": "C2\nR-chart constants 기반?",
+        "backText": "정답: Range distribution"
+      },
+      {
+        "id": "Q58",
+        "topic": "CRE Formula Deck",
+        "frontText": "C3\nSbar chart 기반?",
+        "backText": "정답: χ²"
+      },
+      {
+        "id": "Q59",
+        "topic": "CRE Formula Deck",
+        "frontText": "C4\n자연변동 모델 분포?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q60",
+        "topic": "CRE Formula Deck",
+        "frontText": "C5\nCpk 불량확률 분포?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q61",
+        "topic": "CRE Formula Deck",
+        "frontText": "C6\n7-run 증가 원인?",
+        "backText": "정답: Special cause"
+      },
+      {
+        "id": "Q62",
+        "topic": "CRE Formula Deck",
+        "frontText": "C7\n평균 이동 검정 기반?",
+        "backText": "정답: t-test"
+      },
+      {
+        "id": "Q63",
+        "topic": "CRE Formula Deck",
+        "frontText": "C8\nσ 증가 여부 검정?",
+        "backText": "정답: χ² test"
+      },
+      {
+        "id": "Q64",
+        "topic": "CRE Formula Deck",
+        "frontText": "C9\nCp 계산 기반?",
+        "backText": "정답: Normal"
+      },
+      {
+        "id": "Q65",
+        "topic": "CRE Formula Deck",
+        "frontText": "C10\n정규 관리도 전제?",
+        "backText": "정답: Normal distribution"
+      },
+      {
+        "id": "Q66",
+        "topic": "CRE Formula Deck",
+        "frontText": "D1\nType I MTBF lower bound?",
+        "backText": "정답: χ²"
+      },
+      {
+        "id": "Q67",
+        "topic": "CRE Formula Deck",
+        "frontText": "D2\nType II θ CI?",
+        "backText": "정답: χ²"
+      },
+      {
+        "id": "Q68",
+        "topic": "CRE Formula Deck",
+        "frontText": "D3\nλ MLE = ?",
+        "backText": "정답: r / Σti"
+      },
+      {
+        "id": "Q69",
+        "topic": "CRE Formula Deck",
+        "frontText": "D4\nWeibull MLE + censoring 필요항?",
+        "backText": "정답: Censoring likelihood term"
+      },
+      {
+        "id": "Q70",
+        "topic": "CRE Formula Deck",
+        "frontText": "D5\n검사 사이 고장?",
+        "backText": "정답: Interval censoring"
+      },
+      {
+        "id": "Q71",
+        "topic": "CRE Formula Deck",
+        "frontText": "D6\nIncreasing hazard 모수?",
+        "backText": "정답: β (β>1)"
+      },
+      {
+        "id": "Q72",
+        "topic": "CRE Formula Deck",
+        "frontText": "D7\nWeibull Plot 직선화?",
+        "backText": "정답: ln(ln(1/(1−F))) vs ln(t)"
+      },
+      {
+        "id": "Q73",
+        "topic": "CRE Formula Deck",
+        "frontText": "D8\nB10 life 공식?",
+        "backText": "정답: t = η(−ln(0.9))^(1/β)"
+      },
+      {
+        "id": "Q74",
+        "topic": "CRE Formula Deck",
+        "frontText": "D9\nβ<1 의미?",
+        "backText": "정답: Infant mortality"
+      },
+      {
+        "id": "Q75",
+        "topic": "CRE Formula Deck",
+        "frontText": "D10\nβ>1 의미?",
+        "backText": "정답: Wear-out"
+      },
+      {
+        "id": "Q76",
+        "topic": "CRE Formula Deck",
+        "frontText": "D11\nWeibull η 단위?",
+        "backText": "정답: 시간 단위 그대로"
+      },
+      {
+        "id": "Q77",
+        "topic": "CRE Formula Deck",
+        "frontText": "D12\n절단시간 다양한 경우?",
+        "backText": "정답: Multiple Type I censoring"
+      },
+      {
+        "id": "Q78",
+        "topic": "CRE Formula Deck",
+        "frontText": "D13\nType I θ 하한 분위수?",
+        "backText": "정답: χ² 상부 분위수"
+      },
+      {
+        "id": "Q79",
+        "topic": "CRE Formula Deck",
+        "frontText": "D14\nType II θ 상한 분위수?",
+        "backText": "정답: χ² 하부 분위수"
+      },
+      {
+        "id": "Q80",
+        "topic": "CRE Formula Deck",
+        "frontText": "D15\nN(t) 일정률 고장?",
+        "backText": "정답: Poisson"
+      },
     ];
 
     // ================================
@@ -1181,10 +1138,97 @@
     const shuffleBtn = document.getElementById("shuffleBtn");
     const resetBtn = document.getElementById("resetBtn");
 
+    const hideBtn = document.getElementById("hideBtn");
+    const showHiddenBtn = document.getElementById("showHiddenBtn");
+
     let currentIndex = 0;
     let showBack = false;
     let touchStartX = null;
     let touchEndX = null;
+
+    // ====== 숨김(외움) 기능 ======
+    const STORAGE_KEY_HIDDEN = "cre_flash_hidden_ids";
+    const STORAGE_KEY_SHOW_HIDDEN = "cre_flash_show_hidden";
+
+    let hiddenIds = new Set();
+    let showHidden = false;
+
+    function loadHiddenState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_HIDDEN);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr)) hiddenIds = new Set(arr);
+        }
+      } catch (e) {}
+      try {
+        showHidden = localStorage.getItem(STORAGE_KEY_SHOW_HIDDEN) === "1";
+      } catch (e) {}
+    }
+
+    function saveHiddenState() {
+      try {
+        localStorage.setItem(STORAGE_KEY_HIDDEN, JSON.stringify([...hiddenIds]));
+      } catch (e) {}
+    }
+
+    function saveShowHidden() {
+      try {
+        localStorage.setItem(STORAGE_KEY_SHOW_HIDDEN, showHidden ? "1" : "0");
+      } catch (e) {}
+    }
+
+    function isHiddenCard(idx) {
+      const c = cards[idx];
+      return !!c && c.id && hiddenIds.has(c.id);
+    }
+
+    function getVisibleIndices() {
+      if (showHidden) return cards.map((_, i) => i);
+      const arr = [];
+      for (let i = 0; i < cards.length; i++) {
+        if (!isHiddenCard(i)) arr.push(i);
+      }
+      return arr;
+    }
+
+    function findNextVisibleIndex(fromIndex, step) {
+      if (cards.length === 0) return null;
+
+      if (showHidden) {
+        return (fromIndex + step + cards.length) % cards.length;
+      }
+
+      for (let k = 0; k < cards.length; k++) {
+        const idx = (fromIndex + step * (k + 1) + cards.length * 1000) % cards.length;
+        if (!isHiddenCard(idx)) return idx;
+      }
+      return null; // 전부 숨김
+    }
+
+    function syncHideButtons() {
+      if (cards.length === 0) {
+        hideBtn.disabled = true;
+        showHiddenBtn.disabled = true;
+        return;
+      }
+      hideBtn.disabled = false;
+      showHiddenBtn.disabled = false;
+
+      const card = cards[currentIndex];
+      const hidden = card?.id && hiddenIds.has(card.id);
+
+      hideBtn.textContent = hidden ? "숨김 해제" : "외움(숨기기)";
+      showHiddenBtn.textContent = `숨김 보기: ${showHidden ? "ON" : "OFF"}`;
+    }
+
+    function showAllHiddenMessage() {
+      placeholderEl.style.display = "block";
+      placeholderEl.innerHTML =
+        "모든 카드가 숨김 처리되었습니다.<br/><br/>‘숨김 보기: ON’으로 전환하거나 숨김을 해제하세요.";
+      frontSideEl.classList.remove("active");
+      backSideEl.classList.remove("active");
+    }
 
     function preloadImages() {
       cards.forEach((c) => {
@@ -1208,26 +1252,35 @@
             currentIndex = idx;
           }
         }
-      } catch (e) {
-        // localStorage 못 쓸 때는 무시
-      }
+      } catch (e) {}
     }
 
     function saveIndex() {
       try {
         localStorage.setItem(STORAGE_KEY_INDEX, String(currentIndex));
-      } catch (e) {
-        // 무시
-      }
+      } catch (e) {}
     }
 
     function updateCounter() {
-      const total = cards.length;
-      if (total === 0) {
+      if (cards.length === 0) {
         counterEl.textContent = "0 / 0";
-      } else {
-        counterEl.textContent = currentIndex + 1 + " / " + total;
+        return;
       }
+
+      if (showHidden) {
+        counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
+        return;
+      }
+
+      const vis = getVisibleIndices();
+      if (vis.length === 0) {
+        counterEl.textContent = "0 / 0";
+        return;
+      }
+      const pos = vis.indexOf(currentIndex);
+      // 만약 현재가 숨김이면(이론상 updateCardView가 점프시키지만 안전장치)
+      const shownPos = (pos >= 0) ? (pos + 1) : 1;
+      counterEl.textContent = shownPos + " / " + vis.length;
     }
 
     function applySide() {
@@ -1246,16 +1299,33 @@
 
     function updateCardView() {
       const total = cards.length;
+
       if (total === 0) {
         viewerEl.classList.remove("has-card");
         placeholderEl.style.display = "block";
+        placeholderEl.innerHTML =
+          "아직 카드가 없습니다.<br /><br />아래 코드의 <code>cards</code> 배열에 수식 카드들을 추가해주세요.";
         topicEl.textContent = "";
         frontTextEl.textContent = "";
         backTextEl.textContent = "";
         frontImageEl.style.display = "none";
         backImageEl.style.display = "none";
         updateCounter();
+        applySide();
+        syncHideButtons();
         return;
+      }
+
+      // 숨김 보기 OFF인데 현재 카드가 숨김이면 자동 점프
+      if (!showHidden && isHiddenCard(currentIndex)) {
+        const nextIdx = findNextVisibleIndex(currentIndex, +1);
+        if (nextIdx === null) {
+          showAllHiddenMessage();
+          updateCounter();
+          syncHideButtons();
+          return;
+        }
+        currentIndex = nextIdx;
       }
 
       viewerEl.classList.add("has-card");
@@ -1264,7 +1334,6 @@
       const card = cards[currentIndex];
 
       topicEl.textContent = card.topic || "";
-
       frontTextEl.textContent = card.frontText || "";
       backTextEl.textContent = card.backText || "";
 
@@ -1285,32 +1354,59 @@
       updateCounter();
       applySide();
       saveIndex();
+      syncHideButtons();
     }
 
     function showNext() {
       if (cards.length === 0) return;
-      currentIndex = (currentIndex + 1) % cards.length;
+
+      const nextIdx = findNextVisibleIndex(currentIndex, +1);
+      if (nextIdx === null) {
+        showAllHiddenMessage();
+        updateCounter();
+        syncHideButtons();
+        return;
+      }
+
+      currentIndex = nextIdx;
       showBack = false;
       updateCardView();
     }
 
     function showPrev() {
       if (cards.length === 0) return;
-      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+
+      const prevIdx = findNextVisibleIndex(currentIndex, -1);
+      if (prevIdx === null) {
+        showAllHiddenMessage();
+        updateCounter();
+        syncHideButtons();
+        return;
+      }
+
+      currentIndex = prevIdx;
       showBack = false;
       updateCardView();
     }
 
     function showRandom() {
-      if (cards.length <= 1) {
-        showBack = false;
-        updateCardView();
+      if (cards.length === 0) return;
+
+      const pool = getVisibleIndices();
+      if (pool.length === 0) {
+        showAllHiddenMessage();
+        updateCounter();
+        syncHideButtons();
         return;
       }
-      let newIndex = currentIndex;
-      while (newIndex === currentIndex) {
-        newIndex = Math.floor(Math.random() * cards.length);
+
+      let newIndex = pool[Math.floor(Math.random() * pool.length)];
+      if (pool.length > 1) {
+        while (newIndex === currentIndex) {
+          newIndex = pool[Math.floor(Math.random() * pool.length)];
+        }
       }
+
       currentIndex = newIndex;
       showBack = false;
       updateCardView();
@@ -1318,8 +1414,16 @@
 
     function resetToFirst() {
       if (cards.length === 0) return;
+
       currentIndex = 0;
       showBack = false;
+
+      // 숨김 보기 OFF면 첫 “보이는 카드”로 점프
+      if (!showHidden && isHiddenCard(currentIndex)) {
+        const nextIdx = findNextVisibleIndex(currentIndex, +1);
+        if (nextIdx !== null) currentIndex = nextIdx;
+      }
+
       updateCardView();
     }
 
@@ -1328,6 +1432,7 @@
     nextBtn.addEventListener("click", showNext);
     shuffleBtn.addEventListener("click", showRandom);
     resetBtn.addEventListener("click", resetToFirst);
+
     flipBtn.addEventListener("click", () => {
       if (cards.length === 0) return;
       showBack = !showBack;
@@ -1339,6 +1444,48 @@
       if (cards.length === 0) return;
       showBack = !showBack;
       applySide();
+    });
+
+    // 숨기기 버튼
+    hideBtn.addEventListener("click", () => {
+      if (cards.length === 0) return;
+      const card = cards[currentIndex];
+      if (!card?.id) return;
+
+      if (hiddenIds.has(card.id)) hiddenIds.delete(card.id);
+      else hiddenIds.add(card.id);
+
+      saveHiddenState();
+
+      // 숨김 처리했는데 숨김 보기 OFF면 즉시 스킵
+      if (!showHidden && hiddenIds.has(card.id)) {
+        const nextIdx = findNextVisibleIndex(currentIndex, +1);
+        if (nextIdx === null) {
+          showAllHiddenMessage();
+          updateCounter();
+          syncHideButtons();
+          return;
+        }
+        currentIndex = nextIdx;
+      }
+
+      showBack = false;
+      updateCardView();
+    });
+
+    // 숨김 보기 토글
+    showHiddenBtn.addEventListener("click", () => {
+      showHidden = !showHidden;
+      saveShowHidden();
+
+      // OFF로 전환했는데 현재 카드가 숨김이면 보이는 카드로 점프
+      if (!showHidden && isHiddenCard(currentIndex)) {
+        const nextIdx = findNextVisibleIndex(currentIndex, +1);
+        if (nextIdx !== null) currentIndex = nextIdx;
+      }
+
+      showBack = false;
+      updateCardView();
     });
 
     // 스와이프 제스처
@@ -1359,11 +1506,8 @@
       if (touchStartX === null || touchEndX === null) return;
       const dx = touchEndX - touchStartX;
       const threshold = 40;
-      if (dx > threshold) {
-        showPrev();
-      } else if (dx < -threshold) {
-        showNext();
-      }
+      if (dx > threshold) showPrev();
+      else if (dx < -threshold) showNext();
       touchStartX = null;
       touchEndX = null;
     });
@@ -1386,6 +1530,7 @@
       preloadImages();
       loadSavedIndex();
     }
+    loadHiddenState();
     updateCardView();
   </script>
 </body>
